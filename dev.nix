@@ -6,6 +6,8 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [
     pkgs.nodejs_20
+    pkgs.python3
+    pkgs.jdk17
     pkgs.http-server
   ];
   # Sets environment variables in the workspace
@@ -21,7 +23,7 @@
       enable = true;
       previews = {
         web = {
-          command = ["http-server" "$PORT" "--bind" "0.0.0.0"];
+          command = ["python3" "-m" "http.server" "$PORT" "--bind" "0.0.0.0"];
           manager = "web";
         };
       };
