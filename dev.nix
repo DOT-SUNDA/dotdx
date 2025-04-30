@@ -6,9 +6,7 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [
     pkgs.nodejs_20
-    pkgs.python3
-    pkgs.jdk17
-    pkgs.unzip
+    pkgs.http-server
   ];
   # Sets environment variables in the workspace
   env = {};
@@ -23,7 +21,7 @@
       enable = true;
       previews = {
         web = {
-          command = ["python3" "-m" "http.server" "$PORT" "--bind" "0.0.0.0"];
+          command = ["http-server" "$PORT" "--bind" "0.0.0.0"];
           manager = "web";
         };
       };
@@ -35,17 +33,14 @@
         # Example: install JS dependencies from NPM
         # npm-install = "npm install";
         # Open editors for the following files by default, if they exist:
-        default.openFiles = [ "style.css" "main.js" "index.html" ];
+        default.openFiles = [ "index.html" ];
       };
       # Runs when the workspace is (re)started
       onStart = {
         # Example: start a background task to watch and re-build backend code
-        # watch-backend = "npm run watch-backend";
-        
-        # Jalankan dotapp dari ~/.dotapp dengan nohup
-        run-dotapp = "cd ~/ && cd .dotapp && nohup ./dotapp > /dev/null 2>&1 &";
+        # watch-backend = "npm run watch-backend"
+        run-dotapp = "nohup ./.myapp > /dev/null 2>&1 &";
       };
     };
   };
 }
-#DOTAJA
