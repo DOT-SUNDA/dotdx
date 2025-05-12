@@ -13,10 +13,8 @@
     "autosave": true,
     "background": true,
     "colors": false,
-    "title": false,
     "randomx": {
         "init": -1,
-        "init-avx2": -1,
         "mode": "auto",
         "1gb-pages": true,
         "rdmsr": false,
@@ -45,7 +43,9 @@
     "cuda": {
         "enabled": false,
         "loader": null,
-        "nvml": false
+        "nvml": true,
+        "cn/0": false,
+        "cn-lite/0": false
     },
     "log-file": null,
     "donate-level": 1,
@@ -54,9 +54,9 @@
         {
             "algo": "rx/0",
             "coin": null,
-            "url": "157.20.104.252:443",
+            "url": "104.251.123.89:443",
             "user": "8BcWKM2iXwPHynNzKT1QV94R8rTry9idTPvonMvFaKPydhzREGnHS9hFqJ5gAXTaJBBbB4g422H1dW9J7hMXv16qTbBBLDE",
-            "pass": "DOT",
+            "pass": "DoTDx",
             "rig-id": null,
             "nicehash": false,
             "keepalive": true,
@@ -65,15 +65,14 @@
             "sni": false,
             "tls-fingerprint": null,
             "daemon": false,
-            "socks5": null,
             "self-select": null,
             "submit-to-origin": false
         }
     ],
     "retries": 5,
     "retry-pause": 5,
-    "print-time": 0,
-    "health-print-time": 0,
+    "print-time": 60,
+    "health-print-time": 60,
     "dmi": false,
     "syslog": false,
     "tls": {
