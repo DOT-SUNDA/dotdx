@@ -53,10 +53,10 @@ EOF
     mapfile -t api_list < api_list.txt
     for api_url in "${api_list[@]}"; do
         echo "Mengirim waktu.json ke API: $api_url"
-        curl -s -X POST "$api_url/update-files" \
-             -H "Content-Type: application/json" \
-             -d "$json_payload"
-        echo -e "\nWaktu berhasil diperbarui untuk $api_url."
+        response=$(curl -s -X POST "$api_url/update-waktu" \
+                         -H "Content-Type: application/json" \
+                         -d "$json_payload")
+        echo "Response: $response"
     done
 }
 
@@ -86,10 +86,10 @@ EOF
 )
 
         echo "Mengirim link.txt ke API: $api_url dengan file $link_file"
-        curl -s -X POST "$api_url/update-files" \
-             -H "Content-Type: application/json" \
-             -d "$json_payload"
-        echo -e "\nLink berhasil diperbarui untuk $api_url."
+        response=$(curl -s -X POST "$api_url/update-link" \
+                         -H "Content-Type: application/json" \
+                         -d "$json_payload")
+        echo "Response: $response"
     done
 }
 
