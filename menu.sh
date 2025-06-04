@@ -3,36 +3,31 @@
 # URL GitHub untuk daftar API dan daftar link
 API_LIST_URL="https://dot-store.biz.id/api_list.txt"
 LINK_LIST_URL="https://dot-store.biz.id/link_list.txt"
+BASE_URL="http://:8080" # Base URL tanpa domain/IP, tambahkan port atau endpoint di sini
 
 # Fungsi untuk mengunduh daftar API dan daftar link, lalu membaginya
 download_and_split_links() {
     echo "Mengunduh daftar API..."
-    curl -s -o api_list.txt "$API_LIST_URL"
-    if [[ $? -ne 0 || ! -f api_list.txt ]]; then
-        echo "Gagal mengunduh daftar API. Periksa URL: $API_LIST_URL"
-        exit 1
-    fi
-    echo "Berhasil mengunduh daftar API."
+    curl -s -o api_list.txt "$API_LIST_URL" || { echo "Gagal mengunduh daftar API."; exit 1; }
 
     echo "Mengunduh daftar link..."
-    curl -s -o link_list.txt "$LINK_LIST_URL"
-    if [[ $? -ne 0 || ! -f link_list.txt ]]; then
-        echo "Gagal mengunduh daftar link. Periksa URL: $LINK_LIST_URL"
-        exit 1
-    fi
-    echo "Berhasil mengunduh daftar link."
+    curl -s -o link_list.txt "$LINK_LIST_URL" || { echo "Gagal mengunduh daftar link."; exit 1; }
 
-    echo "Membagi daftar link menjadi file terpisah..."
+    echo "Membagi daftar link berdasarkan pola..."
     mapfile -t links < link_list.txt
-    api_count=$(wc -l < api_list.txt)
-    links_per_file=$(( (${#links[@]} + api_count - 1) / api_count ))
+    mapfile -t apis < api_list.txt
+    api_count=${#apis[@]} # Hitung jumlah API
 
-    rm -f link*.txt  # Hapus file sebelumnya
-    for ((i=0; i<api_count; i++)); do
-        start=$((i * links_per_file))
-        printf "%s\n" "${links[@]:start:links_per_file}" > "link$((i + 1)).txt"
+    # Hapus file link sebelumnya
+    rm -f link*.txt
+
+    # Distribusikan link sesuai pola
+    for ((i=0; i<${#links[@]}; i++)); do
+        group_index=$((i % api_count)) # Tentukan grup berdasarkan indeks
+        echo "${links[i]}" >> "link$((group_index + 1)).txt"
     done
-    echo "Berhasil membagi link menjadi $api_count file."
+
+    echo "Berhasil membagi link menjadi $api_count file dengan pola yang ditentukan."
 }
 
 # Fungsi untuk mengganti waktu.json pada semua API
@@ -40,22 +35,18 @@ update_time_massal() {
     echo "=== Update waktu.json Massal ==="
     read -p "Masukkan tutup jam: " tutup_jam
     read -p "Masukkan buka jam: " buka_jam
-    json_payload=$(cat <<EOF
-{
-    "buka_jam": $buka_jam,
-    "buka_menit": 30,
-    "tutup_jam": $tutup_jam,
-    "tutup_menit": 0
-}
-EOF
-)
+
+    # Buat payload JSON menggunakan jq
+    json_payload=$(jq -n --arg buka "$buka_jam" --arg tutup "$tutup_jam" \
+        '{buka_jam: ($buka|tonumber), buka_menit: 30, tutup_jam: ($tutup|tonumber), tutup_menit: 0}')
 
     mapfile -t api_list < api_list.txt
-    for api_url in "${api_list[@]}"; do
-        echo "Mengirim waktu.json ke API: $api_url"
+    for domain_or_ip in "${api_list[@]}"; do
+        api_url="${BASE_URL//:/http://$domain_or_ip}" # Bangun URL lengkap
+        echo "Mengirim waktu.json ke $api_url"
         response=$(curl -s -X POST "$api_url/update-waktu" \
-                         -H "Content-Type: application/json" \
-                         -d "$json_payload")
+            -H "Content-Type: application/json" \
+            -d "$json_payload")
         echo "Response: $response"
     done
 }
@@ -66,29 +57,19 @@ update_link_massal() {
     mapfile -t api_list < api_list.txt
 
     for i in "${!api_list[@]}"; do
-        api_url="${api_list[$i]}"
         link_file="link$((i + 1)).txt"
+        [[ -f "$link_file" ]] || { echo "File $link_file tidak ditemukan."; continue; }
 
-        if [[ ! -f "$link_file" ]]; then
-            echo "File $link_file tidak ditemukan untuk API $api_url. Lewati."
-            continue
-        fi
-
-        # Baca isi file link
         links=$(<"$link_file")
+        json_payload=$(jq -n --arg link "$links" '{link: $link}')
 
-        # Format data JSON
-        json_payload=$(cat <<EOF
-{
-    "link": "$(echo "$links" | sed ':a;N;$!ba;s/\n/\\n/g')"
-}
-EOF
-)
+        domain_or_ip="${api_list[$i]}"
+        api_url="${BASE_URL//:/http://$domain_or_ip}" # Bangun URL lengkap
 
-        echo "Mengirim link.txt ke API: $api_url dengan file $link_file"
+        echo "Mengirim $link_file ke $api_url"
         response=$(curl -s -X POST "$api_url/update-link" \
-                         -H "Content-Type: application/json" \
-                         -d "$json_payload")
+            -H "Content-Type: application/json" \
+            -d "$json_payload")
         echo "Response: $response"
     done
 }
