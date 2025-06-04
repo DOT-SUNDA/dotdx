@@ -143,40 +143,93 @@ cat <<EOF >$TEMPLATE_FILE
     <title>API Manager Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="bg-dark text-light">
     <div class="container mt-4">
-        <h1 class="mb-4">API Manager Panel</h1>
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Daftar API</h3>
-                <form method="POST" action="/add_api" class="mb-3">
-                    <div class="input-group">
-                        <input type="text" name="api" class="form-control" placeholder="Tambahkan API (IP/Domain)">
-                        <button class="btn btn-primary">Tambah</button>
-                    </div>
-                </form>
-                <ul class="list-group">
-                    {% for api in api_list %}
-                        <li class="list-group-item">{{ api }}</li>
-                    {% endfor %}
-                </ul>
+        <h1 class="mb-4 text-center">API Manager Panel</h1>
+        
+        <!-- Menu utama -->
+        <div class="card bg-secondary mb-3">
+            <div class="card-body text-center">
+                <h3 class="card-title">Pilih Opsi</h3>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#apiSection" aria-expanded="false">
+                        Kelola API
+                    </button>
+                    <button class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#linkSection" aria-expanded="false">
+                        Kelola Link
+                    </button>
+                    <button class="btn btn-warning" data-bs-toggle="collapse" data-bs-target="#splitSection" aria-expanded="false">
+                        Bagi Link ke API
+                    </button>
+                </div>
             </div>
-            <div class="col-md-6">
-                <h3>Daftar Link</h3>
-                <form method="POST" action="/add_link" class="mb-3">
-                    <div class="input-group">
-                        <input type="text" name="link" class="form-control" placeholder="Tambahkan Link">
-                        <button class="btn btn-primary">Tambah</button>
-                    </div>
-                </form>
-                <ul class="list-group">
-                    {% for link in link_list %}
-                        <li class="list-group-item">{{ link }}</li>
-                    {% endfor %}
-                </ul>
+        </div>
+
+        <!-- Kelola API -->
+        <div id="apiSection" class="collapse">
+            <div class="card bg-secondary mb-3">
+                <div class="card-body">
+                    <h4>Daftar API</h4>
+                    <form method="POST" action="/add_api" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="api" class="form-control" placeholder="Tambahkan API (IP/Domain)">
+                            <button class="btn btn-primary">Tambah</button>
+                        </div>
+                    </form>
+                    <ul class="list-group">
+                        {% for api in api_list %}
+                            <li class="list-group-item bg-dark text-light">{{ api }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kelola Link -->
+        <div id="linkSection" class="collapse">
+            <div class="card bg-secondary mb-3">
+                <div class="card-body">
+                    <h4>Daftar Link</h4>
+                    <form method="POST" action="/add_link" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="link" class="form-control" placeholder="Tambahkan Link">
+                            <button class="btn btn-success">Tambah</button>
+                        </div>
+                    </form>
+                    <ul class="list-group">
+                        {% for link in link_list %}
+                            <li class="list-group-item bg-dark text-light">{{ link }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bagi Link ke API -->
+        <div id="splitSection" class="collapse">
+            <div class="card bg-secondary mb-3">
+                <div class="card-body">
+                    <h4>Bagi Link ke API</h4>
+                    <p>Tekan tombol di bawah untuk membagi link secara merata ke API.</p>
+                    <button class="btn btn-warning" onclick="splitLinks()">Bagi Link</button>
+                    <div id="splitResult" class="mt-3"></div>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        async function splitLinks() {
+            const response = await fetch("/split", { method: "POST" });
+            const data = await response.json();
+            const resultDiv = document.getElementById("splitResult");
+            if (data.status === "success") {
+                resultDiv.innerHTML = `<p class="text-success">${data.message}</p>`;
+            } else {
+                resultDiv.innerHTML = `<p class="text-danger">${data.message}</p>`;
+            }
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
