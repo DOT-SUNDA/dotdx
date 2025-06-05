@@ -13,29 +13,27 @@ PORT = 5000
 # Template HTML satu file, menggunakan Bootstrap 5 Dark
 TEMPLATE = """
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Panel API & Link</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       background-color: #121212;
-      color: #eee;
+      color: #ffffff;
       min-height: 100vh;
       padding-top: 2rem;
       padding-bottom: 2rem;
     }
-    .container {
-      max-width: 900px;
+    .modal-content {
+      background-color: #1e1e1e;
+      color: #ffffff;
+      border: none;
     }
     .form-label {
-      color: #ddd;
-    }
-    .card {
-      background-color: #1e1e1e;
-      border: none;
+      color: #ffffff;
     }
     .btn-primary {
       background-color: #0d6efd;
@@ -44,16 +42,9 @@ TEMPLATE = """
     .btn-primary:hover {
       background-color: #0b5ed7;
     }
-    pre {
-      background-color: #2c2c2c;
-      padding: 1rem;
-      border-radius: 0.3rem;
-      overflow-x: auto;
-      color: #ddd;
-    }
     textarea.form-control {
       background-color: #2c2c2c;
-      color: #ddd;
+      color: #ffffff;
       border: 1px solid #444;
       resize: vertical;
     }
@@ -61,7 +52,7 @@ TEMPLATE = """
 </head>
 <body>
 <div class="container">
-  <h1 class="mb-4 text-center">Panel API & Link (Dark Mode)</h1>
+  <h1 class="mb-4 text-center">Panel API & Link</h1>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -76,72 +67,110 @@ TEMPLATE = """
 
   <div class="card mb-4 p-3">
     <h4>1. Unduh Daftar API & Link dan Bagi Link Otomatis</h4>
-    <form action="{{ url_for('download_split') }}" method="post">
-      <button class="btn btn-primary" type="submit">Unduh & Bagi Link</button>
-    </form>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#downloadModal">Unduh & Bagi Link</button>
   </div>
 
   <div class="card mb-4 p-3">
     <h4>2. Update Waktu</h4>
-    <form action="{{ url_for('update_waktu') }}" method="post" class="row g-3 align-items-center">
-      <div class="col-auto">
-        <label for="buka_jam" class="form-label">Jam Buka (0-23)</label>
-        <input type="number" min="0" max="23" id="buka_jam" name="buka_jam" class="form-control" required />
-      </div>
-      <div class="col-auto">
-        <label for="tutup_jam" class="form-label">Jam Tutup (0-23)</label>
-        <input type="number" min="0" max="23" id="tutup_jam" name="tutup_jam" class="form-control" required />
-      </div>
-      <div class="col-auto pt-4">
-        <button type="submit" class="btn btn-primary">Update Waktu</button>
-      </div>
-    </form>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateTimeModal">Update Waktu</button>
   </div>
 
   <div class="card mb-4 p-3">
     <h4>3. Update Link ke Semua API</h4>
-    <form action="{{ url_for('update_link') }}" method="post">
-      <button class="btn btn-primary" type="submit">Update Link</button>
-    </form>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateLinkModal">Update Link</button>
   </div>
 
   <div class="card mb-4 p-3">
     <h4>4. Tambah / Update API List & Link List (otomatis split)</h4>
-    <form action="{{ url_for('add_lists') }}" method="post" class="mb-3">
-      <div class="mb-3">
-        <label for="api_list_text" class="form-label">API List (1 IP/API per baris)</label>
-        <textarea id="api_list_text" name="api_list_text" rows="5" class="form-control" placeholder="contoh: 192.168.1.1" required>{{ api_text }}</textarea>
-      </div>
-      <div class="mb-3">
-        <label for="link_list_text" class="form-label">Link List (1 link per baris)</label>
-        <textarea id="link_list_text" name="link_list_text" rows="8" class="form-control" placeholder="contoh: http://example.com/link1" required>{{ link_text }}</textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">Simpan & Split Otomatis</button>
-    </form>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addListsModal">Tambah / Update List</button>
   </div>
 
-  <div class="card mb-4 p-3">
-    <h4>Daftar API</h4>
-    {% if api_list %}
-      <pre>{{ api_list|join('\\n') }}</pre>
-    {% else %}
-      <p>Tidak ada data API.</p>
-    {% endif %}
+  <!-- Download Modal -->
+  <div class="modal fade" id="downloadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Unduh & Bagi Link</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ url_for('download_split') }}" method="post">
+            <button class="btn btn-primary w-100" type="submit">Unduh & Bagi Link</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="card mb-4 p-3">
-    <h4>Daftar Link Terbagi</h4>
-    {% if links %}
-      {% for filename, linkgroup in links.items() %}
-        <strong>{{ filename }}</strong>
-        <pre>{{ linkgroup|join('\\n') }}</pre>
-      {% endfor %}
-    {% else %}
-      <p>Tidak ada link terbagi.</p>
-    {% endif %}
+  <!-- Update Time Modal -->
+  <div class="modal fade" id="updateTimeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Waktu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ url_for('update_waktu') }}" method="post" class="row g-3 align-items-center">
+            <div class="col-12">
+              <label for="buka_jam" class="form-label">Jam Buka (0-23)</label>
+              <input type="number" min="0" max="23" id="buka_jam" name="buka_jam" class="form-control" required>
+            </div>
+            <div class="col-12">
+              <label for="tutup_jam" class="form-label">Jam Tutup (0-23)</label>
+              <input type="number" min="0" max="23" id="tutup_jam" name="tutup_jam" class="form-control" required>
+            </div>
+            <div class="col-12 pt-3">
+              <button type="submit" class="btn btn-primary w-100">Update Waktu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Link Modal -->
+  <div class="modal fade" id="updateLinkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Link ke Semua API</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ url_for('update_link') }}" method="post">
+            <button class="btn btn-primary w-100" type="submit">Update Link</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Lists Modal -->
+  <div class="modal fade" id="addListsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Tambah / Update API List & Link List</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ url_for('add_lists') }}" method="post">
+            <div class="mb-3">
+              <label for="api_list_text" class="form-label">API List (1 IP/API per baris)</label>
+              <textarea id="api_list_text" name="api_list_text" rows="5" class="form-control" placeholder="contoh: 192.168.1.1" required>{{ api_text }}</textarea>
+            </div>
+            <div class="mb-3">
+              <label for="link_list_text" class="form-label">Link List (1 link per baris)</label>
+              <textarea id="link_list_text" name="link_list_text" rows="8" class="form-control" placeholder="contoh: http://example.com/link1" required>{{ link_text }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Simpan & Split Otomatis</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
@@ -302,4 +331,4 @@ def add_lists():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT)
+    app.run(host='0.0.0.0', port=8000)
