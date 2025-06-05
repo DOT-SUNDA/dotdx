@@ -10,6 +10,11 @@ PORT = 5000
 
 @app.route("/")
 def index():
+    try:
+        api_list = requests.get(API_LIST_URL).text.splitlines()
+    except Exception as e:
+        api_list = [f"Error: {str(e)}"]
+    
     return render_template_string('''
 <!DOCTYPE html>
 <html lang="id">
@@ -25,18 +30,34 @@ def index():
         .container {
             margin-top: 50px;
         }
+        .api-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-center mb-4">API Manager</h1>
-        <div class="card shadow">
+        <div class="card shadow mb-4">
             <div class="card-body">
                 <h5 class="card-title">Opsi</h5>
                 <div class="d-grid gap-2">
                     <button class="btn btn-primary" onclick="downloadAndSplit()">Unduh & Bagi Link</button>
                     <button class="btn btn-success" onclick="updateTime()">Perbarui waktu.json</button>
                     <button class="btn btn-info" onclick="updateLinks()">Perbarui link.txt</button>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="card-title">Daftar API</h5>
+                <div class="api-list">
+                    <ul class="list-group" id="apiList">
+                        {% for api in api_list %}
+                        <li class="list-group-item">{{ api }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
@@ -74,7 +95,7 @@ def index():
     </script>
 </body>
 </html>
-''')
+''', api_list=api_list)
 
 @app.route("/download", methods=["POST"])
 def download_and_split():
@@ -131,4 +152,4 @@ def update_links():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8000)
+    app.run(debug=True, host="0.0.0.0", port=8000)
