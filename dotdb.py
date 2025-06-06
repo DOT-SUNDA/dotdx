@@ -30,28 +30,30 @@ HTML_TEMPLATE = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Panel Multi RDP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body { font-family: 'Arial', sans-serif; background: #f2f2f2; padding: 30px; }
         .container { background: white; padding: 20px; border-radius: 8px; max-width: 700px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        textarea, input, button { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; padding: 10px; border-radius: 4px; }
         button:hover { background-color: #0056b3; }
         .ip-list { margin-top: 20px; }
         .ip-item { display: flex; justify-content: space-between; padding: 5px 0; }
         .results { background: #e8f0ff; padding: 10px; border-radius: 5px; margin-top: 20px; white-space: pre-wrap; }
         h2, h4 { color: #333; }
         label { font-weight: bold; }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); padding-top: 60px; }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; border-radius: 8px; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+        .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
     </style>
 </head>
 <body>
 <div class="container">
     <h2>Control Panel Multi RDP</h2>
     
-    <form method="POST" action="/add_ip">
-        <label>Tambah IP RDP (tanpa http:// dan port):</label>
-        <input name="ip" placeholder="192.168.1.10" required>
-        <button type="submit">Tambah</button>
-    </form>
+    <button id="addIpBtn">Tambah IP RDP</button>
+    <button id="sendLinkBtn">Kirim Link</button>
+    <button id="sendWaktuBtn">Kirim Waktu</button>
 
     {% if ip_list %}
     <div class="ip-list">
@@ -71,23 +73,6 @@ HTML_TEMPLATE = '''
     </div>
     {% endif %}
 
-    <hr>
-
-    <form method="POST" action="/send_link">
-        <label>Link (satu per baris):</label>
-        <textarea name="links" rows="5" placeholder="https://example.com/page1\nhttps://example.com/page2"></textarea>
-        <button type="submit">Kirim Link ke IP</button>
-    </form>
-
-    <form method="POST" action="/send_waktu">
-        <h4>Waktu</h4>
-        <input name="buka_jam" type="number" placeholder="Jam Buka" min="0" max="23">
-        <input name="buka_menit" type="number" placeholder="Menit Buka" min="0" max="59">
-        <input name="tutup_jam" type="number" placeholder="Jam Tutup" min="0" max="23">
-        <input name="tutup_menit" type="number" placeholder="Menit Tutup" min="0" max="59">
-        <button type="submit">Kirim Waktu ke Semua IP</button>
-    </form>
-
     {% if results %}
     <div class="results">
         {% for res in results %}
@@ -96,6 +81,82 @@ HTML_TEMPLATE = '''
     </div>
     {% endif %}
 </div>
+
+<!-- Modal untuk Tambah IP -->
+<div id="addIpModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeAddIpModal">&times;</span>
+        <h4>Tambah IP RDP</h4>
+        <form method="POST" action="/add_ip">
+            <label>IP RDP (tanpa http:// dan port):</label>
+            <input name="ip" placeholder="192.168.1.10" required>
+            <button type="submit">Tambah</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal untuk Kirim Link -->
+<div id="sendLinkModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeSendLinkModal">&times;</span>
+        <h4>Kirim Link</h4>
+        <form method="POST" action="/send_link">
+            <label>Link (satu per baris):</label>
+            <textarea name="links" rows="5" placeholder="https://example.com/page1\nhttps://example.com/page2"></textarea>
+            <button type="submit">Kirim Link ke IP</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal untuk Kirim Waktu -->
+<div id="sendWaktuModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeSendWaktuModal">&times;</span>
+        <h4>Kirim Waktu</h4>
+        <form method="POST" action="/send_waktu">
+            <label>Jam Buka:</label>
+            <input name="buka_jam" type="number" placeholder="Jam Buka" min="0" max="23">
+            <label>Menit Buka:</label>
+            <input name="buka_menit" type="number" placeholder="Menit Buka" min="0" max="59">
+            <label>Jam Tutup:</label>
+            <input name="tutup_jam" type="number" placeholder="Jam Tutup" min="0" max="23">
+            <label>Menit Tutup:</label>
+            <input name="tutup_menit" type="number" placeholder="Menit Tutup" min="0" max="59">
+            <button type="submit">Kirim Waktu ke Semua IP</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Menampilkan modal
+    document.getElementById('addIpBtn').onclick = function() {
+        document.getElementById('addIpModal').style.display = "block";
+    }
+    document.getElementById('sendLinkBtn').onclick = function() {
+        document.getElementById('sendLinkModal').style.display = "block";
+    }
+    document.getElementById('sendWaktuBtn').onclick = function() {
+        document.getElementById('sendWaktuModal').style.display = "block";
+    }
+
+    // Menutup modal
+    document.getElementById('closeAddIpModal').onclick = function() {
+        document.getElementById('addIpModal').style.display = "none";
+    }
+    document.getElementById('closeSendLinkModal').onclick = function() {
+        document.getElementById('sendLinkModal').style.display = "none";
+    }
+    document.getElementById('closeSendWaktuModal').onclick = function() {
+        document.getElementById('sendWaktuModal').style.display = "none";
+    }
+
+    // Menutup modal jika klik di luar modal
+    window.onclick = function(event) {
+        if (event.target.className === 'modal') {
+            event.target.style.display = "none";
+        }
+    }
+</script>
 </body>
 </html>
 '''
