@@ -159,10 +159,10 @@ def send_link():
 @app.route('/send_waktu', methods=['POST'])
 def send_waktu():
     waktu = {
-        "buka_jam": request.form.get('buka_jam'),
-        "buka_menit": request.form.get('buka_menit'),
-        "tutup_jam": request.form.get('tutup_jam'),
-        "tutup_menit": request.form.get('tutup_menit'),
+        "buka_jam": int(request.form.get('buka_jam', 0)),
+        "buka_menit": int(request.form.get('buka_menit', 0)),
+        "tutup_jam": int(request.form.get('tutup_jam', 0)),
+        "tutup_menit": int(request.form.get('tutup_menit', 0)),
     }
 
     results = []
