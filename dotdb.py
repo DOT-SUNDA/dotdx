@@ -81,10 +81,10 @@ HTML_TEMPLATE = '''
 
     <form method="POST" action="/send_waktu">
         <h4>Waktu</h4>
-        <input name="buka_jam" type="number" placeholder="Buka Jam" min="0" max="23">
-        <input name="buka_menit" type="number" placeholder="Buka Menit" min="0" max="59">
-        <input name="tutup_jam" type="number" placeholder="Tutup Jam" min="0" max="23">
-        <input name="tutup_menit" type="number" placeholder="Tutup Menit" min="0" max="59">
+        <input name="buka_jam" type="number" placeholder="Jam Buka" min="0" max="23">
+        <input name="buka_menit" type="number" placeholder="Menit Buka" min="0" max="59">
+        <input name="tutup_jam" type="number" placeholder="Jam Tutup" min="0" max="23">
+        <input name="tutup_menit" type="number" placeholder="Menit Tutup" min="0" max="59">
         <button type="submit">Kirim Waktu ke Semua IP</button>
     </form>
 
