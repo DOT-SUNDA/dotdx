@@ -81,8 +81,8 @@ HTML_TEMPLATE = '''
         <span class="close cursor-pointer text-gray-500 float-right" id="closeAddIpModal">&times;</span>
         <h4 class="text-lg font-semibold">Tambah IP RDP</h4>
         <form method="POST" action="/add_ip">
-            <label class="block mt-4">IP RDP (tanpa http:// dan port):</label>
-            <input name="ip" class="border border-gray-300 rounded w-full p-2 mt-1" placeholder="192.168.1.10" required>
+            <label class="block mt-4">IP RDP (satu per baris):</label>
+            <textarea name="ips" rows="5" class="border border-gray-300 rounded w-full p-2 mt-1" placeholder="192.168.1.10&#10;192.168.1.11"></textarea>
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Tambah</button>
         </form>
     </div>
@@ -162,10 +162,12 @@ def index():
 
 @app.route('/add_ip', methods=['POST'])
 def add_ip():
-    ip = request.form.get('ip').strip()
-    if ip and ip not in ip_list:
-        ip_list.append(ip)
-        save_ips(ip_list)
+    ips = request.form.get('ips', '').strip().splitlines()
+    ips = [ip.strip() for ip in ips if ip.strip()]
+    for ip in ips:
+        if ip and ip not in ip_list:
+            ip_list.append(ip)
+    save_ips(ip_list)
     return redirect(url_for('index'))
 
 @app.route('/delete_ip', methods=['POST'])
