@@ -1,17 +1,33 @@
 from flask import Flask, request, render_template_string, redirect, url_for
 import requests
+import json
+import os
 
 app = Flask(__name__)
 
-# Simpan daftar IP saja
-ip_list = []
-PORT = 5000  # Port default API di semua RDP
+# ====== Konfigurasi ======
+PORT = 5000
+IP_FILE = "ip_list.json"
 
+# ====== Load IP ======
+def load_ips():
+    if os.path.exists(IP_FILE):
+        with open(IP_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+def save_ips(ip_list):
+    with open(IP_FILE, "w") as f:
+        json.dump(ip_list, f, indent=4)
+
+ip_list = load_ips()
+
+# ====== HTML ======
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Control Panel RDP</title>
+    <title>Control Panel Multi RDP</title>
     <style>
         body { font-family: sans-serif; background: #f2f2f2; padding: 30px; }
         .container { background: white; padding: 20px; border-radius: 8px; max-width: 700px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -78,6 +94,8 @@ HTML_TEMPLATE = '''
 </html>
 '''
 
+# ====== ROUTES ======
+
 @app.route('/')
 def index():
     return render_template_string(HTML_TEMPLATE, ip_list=ip_list, results=[])
@@ -87,6 +105,7 @@ def add_ip():
     ip = request.form.get('ip').strip()
     if ip and ip not in ip_list:
         ip_list.append(ip)
+        save_ips(ip_list)
     return redirect(url_for('index'))
 
 @app.route('/delete_ip', methods=['POST'])
@@ -94,11 +113,13 @@ def delete_ip():
     ip = request.form.get('ip')
     if ip in ip_list:
         ip_list.remove(ip)
+        save_ips(ip_list)
     return redirect(url_for('index'))
 
 @app.route('/clear_ip', methods=['POST'])
 def clear_ip():
     ip_list.clear()
+    save_ips(ip_list)
     return redirect(url_for('index'))
 
 @app.route('/send_link', methods=['POST'])
@@ -111,19 +132,17 @@ def send_link():
         results.append("❌ Tidak ada IP yang ditambahkan.")
         return render_template_string(HTML_TEMPLATE, ip_list=ip_list, results=results)
 
-    # Inisialisasi map IP ke daftar link
+    # Buat map IP ke link-list (dengan pembagian merata perbaris)
     ip_links_map = {ip: [] for ip in ip_list}
-    
     for i, link in enumerate(links):
-        ip = ip_list[i % len(ip_list)]
-        ip_links_map[ip].append(link)
+        target_ip = ip_list[i % len(ip_list)]
+        ip_links_map[target_ip].append(link)
 
-    # Kirim per IP
     for ip in ip_list:
-        payload_links = "\n".join(ip_links_map[ip])  # gabung jadi string multiline
+        combined_links = "\n".join(ip_links_map[ip])
         url = f"http://{ip}:{PORT}/update-link"
         try:
-            r = requests.post(url, json={"link": payload_links}, timeout=5)
+            r = requests.post(url, json={"link": combined_links}, timeout=5)
             msg = r.json().get("message", r.text)
             results.append(f"{ip} ← {len(ip_links_map[ip])} link → {msg}")
         except Exception as e:
@@ -152,5 +171,6 @@ def send_waktu():
 
     return render_template_string(HTML_TEMPLATE, ip_list=ip_list, results=results)
 
+# ====== Run Server ======
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
