@@ -30,99 +30,92 @@ HTML_TEMPLATE = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Panel Multi RDP</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Arial', sans-serif; background: #f2f2f2; padding: 30px; }
-        .container { background: white; padding: 20px; border-radius: 8px; max-width: 700px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; padding: 10px; border-radius: 4px; }
-        button:hover { background-color: #0056b3; }
-        .ip-list { margin-top: 20px; }
-        .ip-item { display: flex; justify-content: space-between; padding: 5px 0; }
-        .results { background: #e8f0ff; padding: 10px; border-radius: 5px; margin-top: 20px; white-space: pre-wrap; }
-        h2, h4 { color: #333; }
-        label { font-weight: bold; }
-        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); padding-top: 60px; }
-        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; border-radius: 8px; }
-        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
-        .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+        .modal { display: none; }
     </style>
 </head>
-<body>
-<div class="container">
-    <h2>Control Panel Multi RDP</h2>
+<body class="bg-gray-100 font-sans">
+<div class="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <h2 class="text-2xl font-bold text-gray-800">Control Panel Multi RDP</h2>
     
-    <button id="addIpBtn">Tambah IP RDP</button>
-    <button id="sendLinkBtn">Kirim Link</button>
-    <button id="sendWaktuBtn">Kirim Waktu</button>
+    <div class="mt-4">
+        <button id="addIpBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Tambah IP RDP</button>
+        <button id="sendLinkBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Kirim Link</button>
+        <button id="sendWaktuBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Kirim Waktu</button>
+    </div>
 
     {% if ip_list %}
-    <div class="ip-list">
-        <h4>Daftar IP Aktif:</h4>
-        {% for ip in ip_list %}
-            <div class="ip-item">
-                <span>{{ loop.index }}. {{ ip }}</span>
-                <form method="POST" action="/delete_ip" style="display:inline;">
-                    <input type="hidden" name="ip" value="{{ ip }}">
-                    <button type="submit">Hapus</button>
-                </form>
-            </div>
-        {% endfor %}
-        <form method="POST" action="/clear_ip">
-            <button type="submit" style="margin-top:10px;">Hapus Semua</button>
+    <div class="mt-6">
+        <h4 class="text-lg font-semibold text-gray-700">Daftar IP Aktif:</h4>
+        <ul class="list-disc pl-5">
+            {% for ip in ip_list %}
+                <li class="flex justify-between items-center py-2">
+                    <span class="text-gray-600">{{ loop.index }}. {{ ip }}</span>
+                    <form method="POST" action="/delete_ip" class="inline">
+                        <input type="hidden" name="ip" value="{{ ip }}">
+                        <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Hapus</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <form method="POST" action="/clear_ip" class="mt-4">
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Hapus Semua</button>
         </form>
     </div>
     {% endif %}
 
     {% if results %}
-    <div class="results">
+    <div class="mt-6 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded">
+        <h4 class="font-bold">Hasil:</h4>
         {% for res in results %}
-            {{ res }}<br>
+            <p>{{ res }}</p>
         {% endfor %}
     </div>
     {% endif %}
 </div>
 
 <!-- Modal untuk Tambah IP -->
-<div id="addIpModal" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeAddIpModal">&times;</span>
-        <h4>Tambah IP RDP</h4>
+<div id="addIpModal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 w-11/12 md:w-1/3">
+        <span class="close cursor-pointer text-gray-500 float-right" id="closeAddIpModal">&times;</span>
+        <h4 class="text-lg font-semibold">Tambah IP RDP</h4>
         <form method="POST" action="/add_ip">
-            <label>IP RDP (tanpa http:// dan port):</label>
-            <input name="ip" placeholder="192.168.1.10" required>
-            <button type="submit">Tambah</button>
+            <label class="block mt-4">IP RDP (tanpa http:// dan port):</label>
+            <input name="ip" class="border border-gray-300 rounded w-full p-2 mt-1" placeholder="192.168.1.10" required>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Tambah</button>
         </form>
     </div>
 </div>
 
 <!-- Modal untuk Kirim Link -->
-<div id="sendLinkModal" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeSendLinkModal">&times;</span>
-        <h4>Kirim Link</h4>
+<div id="sendLinkModal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 w-11/12 md:w-1/3">
+        <span class="close cursor-pointer text-gray-500 float-right" id="closeSendLinkModal">&times;</span>
+        <h4 class="text-lg font-semibold">Kirim Link</h4>
         <form method="POST" action="/send_link">
-            <label>Link (satu per baris):</label>
-            <textarea name="links" rows="5" placeholder="https://example.com/page1\nhttps://example.com/page2"></textarea>
-            <button type="submit">Kirim Link ke IP</button>
+            <label class="block mt-4">Link (satu per baris):</label>
+            <textarea name="links" rows="5" class="border border-gray-300 rounded w-full p-2 mt-1" placeholder="https://example.com/page1&#10;https://example.com/page2"></textarea>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Kirim Link ke IP</button>
         </form>
     </div>
 </div>
 
 <!-- Modal untuk Kirim Waktu -->
-<div id="sendWaktuModal" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeSendWaktuModal">&times;</span>
-        <h4>Kirim Waktu</h4>
+<div id="sendWaktuModal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 w-11/12 md:w-1/3">
+        <span class="close cursor-pointer text-gray-500 float-right" id="closeSendWaktuModal">&times;</span>
+        <h4 class="text-lg font-semibold">Kirim Waktu</h4>
         <form method="POST" action="/send_waktu">
-            <label>Jam Buka:</label>
-            <input name="buka_jam" type="number" placeholder="Jam Buka" min="0" max="23">
-            <label>Menit Buka:</label>
-            <input name="buka_menit" type="number" placeholder="Menit Buka" min="0" max="59">
-            <label>Jam Tutup:</label>
-            <input name="tutup_jam" type="number" placeholder="Jam Tutup" min="0" max="23">
-            <label>Menit Tutup:</label>
-            <input name="tutup_menit" type="number" placeholder="Menit Tutup" min="0" max="59">
-            <button type="submit">Kirim Waktu ke Semua IP</button>
+            <label class="block mt-4">Jam Buka:</label>
+            <input name="buka_jam" type="number" class="border border-gray-300 rounded w-full p-2 mt-1" placeholder="Jam Buka" min="0" max="23">
+            <label class="block mt-4">Menit Buka:</label>
+            <input name="buka_menit" type="number" class="border border-gray-300 rounded w-full p-2 mt-1" placeholder="Menit Buka" min="0" max="59">
+            <label class="block mt-4">Jam Tutup:</label>
+            <input name="tutup_jam" type="number" class="border border-gray-300 rounded w-full p-2 mt-1" placeholder="Jam Tutup" min="0" max="23">
+            <label class="block mt-4">Menit Tutup:</label>
+            <input name="tutup_menit" type="number" class="border border-gray-300 rounded w-full p-2 mt-1" placeholder="Menit Tutup" min="0" max="59">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Kirim Waktu ke Semua IP</button>
         </form>
     </div>
 </div>
@@ -130,13 +123,13 @@ HTML_TEMPLATE = '''
 <script>
     // Menampilkan modal
     document.getElementById('addIpBtn').onclick = function() {
-        document.getElementById('addIpModal').style.display = "block";
+        document.getElementById('addIpModal').style.display = "flex";
     }
     document.getElementById('sendLinkBtn').onclick = function() {
-        document.getElementById('sendLinkModal').style.display = "block";
+        document.getElementById('sendLinkModal').style.display = "flex";
     }
     document.getElementById('sendWaktuBtn').onclick = function() {
-        document.getElementById('sendWaktuModal').style.display = "block";
+        document.getElementById('sendWaktuModal').style.display = "flex";
     }
 
     // Menutup modal
@@ -152,7 +145,7 @@ HTML_TEMPLATE = '''
 
     // Menutup modal jika klik di luar modal
     window.onclick = function(event) {
-        if (event.target.className === 'modal') {
+        if (event.target.className.includes('modal')) {
             event.target.style.display = "none";
         }
     }
