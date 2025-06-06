@@ -107,18 +107,27 @@ def send_link():
     links = [l.strip() for l in links if l.strip()]
     results = []
 
+    if not ip_list:
+        results.append("❌ Tidak ada IP yang ditambahkan.")
+        return render_template_string(HTML_TEMPLATE, ip_list=ip_list, results=results)
+
+    # Inisialisasi map IP ke daftar link
+    ip_links_map = {ip: [] for ip in ip_list}
+    
     for i, link in enumerate(links):
-        if i < len(ip_list):
-            ip = ip_list[i]
-            url = f"http://{ip}:{PORT}/update-link"
-            try:
-                r = requests.post(url, json={"link": link}, timeout=5)
-                msg = r.json().get("message", r.text)
-                results.append(f"{ip} ← {link} → {msg}")
-            except Exception as e:
-                results.append(f"{ip} ← {link} → Error: {str(e)}")
-        else:
-            results.append(f"Link '{link}' dilewati (tidak cukup IP)")
+        ip = ip_list[i % len(ip_list)]
+        ip_links_map[ip].append(link)
+
+    # Kirim per IP
+    for ip in ip_list:
+        payload_links = "\n".join(ip_links_map[ip])  # gabung jadi string multiline
+        url = f"http://{ip}:{PORT}/update-link"
+        try:
+            r = requests.post(url, json={"link": payload_links}, timeout=5)
+            msg = r.json().get("message", r.text)
+            results.append(f"{ip} ← {len(ip_links_map[ip])} link → {msg}")
+        except Exception as e:
+            results.append(f"{ip} ← link → Error: {str(e)}")
 
     return render_template_string(HTML_TEMPLATE, ip_list=ip_list, results=results)
 
