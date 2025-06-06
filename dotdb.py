@@ -9,7 +9,7 @@ app = Flask(__name__)
 PORT = 5000
 IP_FILE = "ip_list.json"
 
-# ====== IP Handling ======
+# ====== Load IP ======
 def load_ips():
     if os.path.exists(IP_FILE):
         with open(IP_FILE, "r") as f:
@@ -20,20 +20,34 @@ def save_ips(ip_list):
     with open(IP_FILE, "w") as f:
         json.dump(ip_list, f, indent=4)
 
-# ====== HTML Template ======
-HTML_TEMPLATE = '''<!DOCTYPE html>
-<html>
+ip_list = load_ips()
+
+# ====== HTML ======
+HTML_TEMPLATE = '''
+<!DOCTYPE html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Panel Multi RDP</title>
     <style>
-        /* CSS seperti sebelumnya (tidak diubah) */
+        body { font-family: 'Arial', sans-serif; background: #f2f2f2; padding: 30px; }
+        .container { background: white; padding: 20px; border-radius: 8px; max-width: 700px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        textarea, input, button { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .ip-list { margin-top: 20px; }
+        .ip-item { display: flex; justify-content: space-between; padding: 5px 0; }
+        .results { background: #e8f0ff; padding: 10px; border-radius: 5px; margin-top: 20px; white-space: pre-wrap; }
+        h2, h4 { color: #333; }
+        label { font-weight: bold; }
     </style>
 </head>
 <body>
 <div class="container">
     <h2>Control Panel Multi RDP</h2>
-
-    <form method="POST" action="/add_ip" onsubmit="showModal('IP berhasil ditambahkan!')">
+    
+    <form method="POST" action="/add_ip">
         <label>Tambah IP RDP (tanpa http:// dan port):</label>
         <input name="ip" placeholder="192.168.1.10" required>
         <button type="submit">Tambah</button>
@@ -45,32 +59,32 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         {% for ip in ip_list %}
             <div class="ip-item">
                 <span>{{ loop.index }}. {{ ip }}</span>
-                <form method="POST" action="/delete_ip" style="display:inline;" onsubmit="showModal('IP dihapus!')">
+                <form method="POST" action="/delete_ip" style="display:inline;">
                     <input type="hidden" name="ip" value="{{ ip }}">
                     <button type="submit">Hapus</button>
                 </form>
             </div>
         {% endfor %}
-        <form method="POST" action="/clear_ip" onsubmit="showModal('Semua IP telah dihapus!')">
-            <button type="submit" style="background:#dc3545;">Hapus Semua</button>
+        <form method="POST" action="/clear_ip">
+            <button type="submit" style="margin-top:10px;">Hapus Semua</button>
         </form>
     </div>
     {% endif %}
 
     <hr>
 
-    <form method="POST" action="/send_link" onsubmit="showModal('Link dikirim ke IP!')">
+    <form method="POST" action="/send_link">
         <label>Link (satu per baris):</label>
         <textarea name="links" rows="5" placeholder="https://example.com/page1\nhttps://example.com/page2"></textarea>
         <button type="submit">Kirim Link ke IP</button>
     </form>
 
-    <form method="POST" action="/send_waktu" onsubmit="showModal('Waktu dikirim ke semua IP!')">
+    <form method="POST" action="/send_waktu">
         <h4>Waktu</h4>
-        <input name="buka_jam" type="number" placeholder="Buka Jam">
-        <input name="buka_menit" type="number" placeholder="Buka Menit">
-        <input name="tutup_jam" type="number" placeholder="Tutup Jam">
-        <input name="tutup_menit" type="number" placeholder="Tutup Menit">
+        <input name="buka_jam" type="number" placeholder="Buka Jam" min="0" max="23">
+        <input name="buka_menit" type="number" placeholder="Buka Menit" min="0" max="59">
+        <input name="tutup_jam" type="number" placeholder="Tutup Jam" min="0" max="23">
+        <input name="tutup_menit" type="number" placeholder="Tutup Menit" min="0" max="59">
         <button type="submit">Kirim Waktu ke Semua IP</button>
     </form>
 
@@ -82,50 +96,19 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     </div>
     {% endif %}
 </div>
-
-<!-- Modal -->
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <p id="modalText">Notifikasi</p>
-    </div>
-</div>
-
-<script>
-    function showModal(message) {
-        event.preventDefault();
-        document.getElementById("modalText").innerText = message;
-        document.getElementById("myModal").style.display = "block";
-        setTimeout(() => {
-            document.getElementById("myModal").style.display = "none";
-            event.target.submit();
-        }, 1200);
-    }
-
-    function closeModal() {
-        document.getElementById("myModal").style.display = "none";
-    }
-
-    window.onclick = function(event) {
-        if (event.target === document.getElementById("myModal")) {
-            closeModal();
-        }
-    }
-</script>
 </body>
 </html>
 '''
 
-# ====== Routes ======
+# ====== ROUTES ======
 
 @app.route('/')
 def index():
-    return render_template_string(HTML_TEMPLATE, ip_list=load_ips(), results=[])
+    return render_template_string(HTML_TEMPLATE, ip_list=ip_list, results=[])
 
 @app.route('/add_ip', methods=['POST'])
 def add_ip():
-    ip = request.form.get('ip', '').strip()
-    ip_list = load_ips()
+    ip = request.form.get('ip').strip()
     if ip and ip not in ip_list:
         ip_list.append(ip)
         save_ips(ip_list)
@@ -134,7 +117,6 @@ def add_ip():
 @app.route('/delete_ip', methods=['POST'])
 def delete_ip():
     ip = request.form.get('ip')
-    ip_list = load_ips()
     if ip in ip_list:
         ip_list.remove(ip)
         save_ips(ip_list)
@@ -142,22 +124,25 @@ def delete_ip():
 
 @app.route('/clear_ip', methods=['POST'])
 def clear_ip():
-    save_ips([])
+    ip_list.clear()
+    save_ips(ip_list)
     return redirect(url_for('index'))
 
 @app.route('/send_link', methods=['POST'])
 def send_link():
-    links = [l.strip() for l in request.form.get('links', '').strip().splitlines() if l.strip()]
-    ip_list = load_ips()
+    links = request.form.get('links', '').strip().splitlines()
+    links = [l.strip() for l in links if l.strip()]
     results = []
 
     if not ip_list:
         results.append("❌ Tidak ada IP yang ditambahkan.")
         return render_template_string(HTML_TEMPLATE, ip_list=ip_list, results=results)
 
+    # Buat map IP ke link-list (dengan pembagian merata perbaris)
     ip_links_map = {ip: [] for ip in ip_list}
     for i, link in enumerate(links):
-        ip_links_map[ip_list[i % len(ip_list)]].append(link)
+        target_ip = ip_list[i % len(ip_list)]
+        ip_links_map[target_ip].append(link)
 
     for ip in ip_list:
         combined_links = "\n".join(ip_links_map[ip])
@@ -173,22 +158,14 @@ def send_link():
 
 @app.route('/send_waktu', methods=['POST'])
 def send_waktu():
-    def parse_int_or_none(val):
-        try:
-            return int(val)
-        except (ValueError, TypeError):
-            return None
-
     waktu = {
-        "buka_jam": parse_int_or_none(request.form.get('buka_jam')),
-        "buka_menit": parse_int_or_none(request.form.get('buka_menit')),
-        "tutup_jam": parse_int_or_none(request.form.get('tutup_jam')),
-        "tutup_menit": parse_int_or_none(request.form.get('tutup_menit')),
+        "buka_jam": request.form.get('buka_jam'),
+        "buka_menit": request.form.get('buka_menit'),
+        "tutup_jam": request.form.get('tutup_jam'),
+        "tutup_menit": request.form.get('tutup_menit'),
     }
 
-    ip_list = load_ips()
     results = []
-
     for ip in ip_list:
         url = f"http://{ip}:{PORT}/update-waktu"
         try:
@@ -200,6 +177,6 @@ def send_waktu():
 
     return render_template_string(HTML_TEMPLATE, ip_list=ip_list, results=results)
 
-# ====== Jalankan Server ======
+# ====== Run Server ======
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
