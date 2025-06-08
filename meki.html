@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Control Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h2 {
+      color: #333;
+    }
+    textarea, input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h2>Daftar IP</h2>
+  <button onclick="loadIPList()">Refresh IP</button>
+  <pre id="ipListDisplay">Loading...</pre>
+
+  <h3>Tambah IP</h3>
+  <textarea id="ipInput" placeholder="Satu IP per baris"></textarea>
+  <button onclick="addIPs()">Tambah IP</button>
+
+  <h3>Hapus IP</h3>
+  <input id="deleteIp" placeholder="IP yang akan dihapus">
+  <button onclick="deleteIP()">Hapus IP</button>
+
+  <h3>Clear Semua IP</h3>
+  <button onclick="clearIPs()">Clear IP</button>
+
+  <h3>Kirim Link</h3>
+  <textarea id="linkInput" placeholder="Satu link per baris"></textarea>
+  <button onclick="sendLinks()">Kirim Link</button>
+
+  <h3>Kirim Waktu</h3>
+  <input type="number" id="buka_jam" placeholder="Jam buka (0-23)">
+  <input type="number" id="buka_menit" placeholder="Menit buka (0-59)">
+  <input type="number" id="tutup_jam" placeholder="Jam tutup (0-23)">
+  <input type="number" id="tutup_menit" placeholder="Menit tutup (0-59)">
+  <button onclick="sendWaktu()">Kirim Waktu</button>
+
+  <h3>Log</h3>
+  <pre id="logOutput"></pre>
+
+  <script>
+    const API_BASE = "http://localhost:8000/api"; // Ganti jika API online di domain/VPS
+
+    function log(message) {
+      document.getElementById("logOutput").textContent = JSON.stringify(message, null, 2);
+    }
+
+    function loadIPList() {
+      fetch(`${API_BASE}/ip_list`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("ipListDisplay").textContent = data.ip_list.join("\n") || "(kosong)";
+        });
+    }
+
+    function addIPs() {
+      const ips = document.getElementById("ipInput").value.split("\n").map(ip => ip.trim()).filter(ip => ip);
+      fetch(`${API_BASE}/add_ip`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ips})
+      }).then(res => res.json()).then(log).then(loadIPList);
+    }
+
+    function deleteIP() {
+      const ip = document.getElementById("deleteIp").value.trim();
+      fetch(`${API_BASE}/delete_ip`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ip})
+      }).then(res => res.json()).then(log).then(loadIPList);
+    }
+
+    function clearIPs() {
+      fetch(`${API_BASE}/clear_ips`, {method: "POST"}).then(res => res.json()).then(log).then(loadIPList);
+    }
+
+    function sendLinks() {
+      const links = document.getElementById("linkInput").value.split("\n").map(l => l.trim()).filter(l => l);
+      fetch(`${API_BASE}/send_link`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({links})
+      }).then(res => res.json()).then(log);
+    }
+
+    function sendWaktu() {
+      const data = {
+        buka_jam: parseInt(document.getElementById("buka_jam").value || 0),
+        buka_menit: parseInt(document.getElementById("buka_menit").value || 0),
+        tutup_jam: parseInt(document.getElementById("tutup_jam").value || 0),
+        tutup_menit: parseInt(document.getElementById("tutup_menit").value || 0)
+      };
+      fetch(`${API_BASE}/send_waktu`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      }).then(res => res.json()).then(log);
+    }
+
+    // Load awal
+    loadIPList();
+  </script>
+</body>
+</html>
