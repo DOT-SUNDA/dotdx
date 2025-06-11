@@ -1,241 +1,69 @@
 #!/bin/bash
+set -euo pipefail
 
-# Autoscript untuk setup API Manager dengan Flask
-echo "🚀 Mulai setup API Manager..."
+DOMAIN="vpsdot.biz.id"
+APP_NAME="api"
+APP_USER="flaskuser"
+APP_PORT=8000
+PROJECT_DIR="/opt/$APP_NAME"
 
-# Periksa apakah Python 3 dan pip terinstal
-echo "📦 Memeriksa Python3 dan pip..."
-if ! command -v python3 &>/dev/null || ! command -v pip3 &>/dev/null; then
-    echo "❌ Python3 atau pip3 tidak ditemukan. Silakan instal terlebih dahulu."
-    exit 1
-fi
+echo "➡️ Update paket & install dependency..."
+sudo apt update
+sudo apt install -y python3 python3-venv python3-pip nginx certbot python3-certbot-nginx
 
-# Membuat virtual environment
-echo "🐍 Membuat virtual environment..."
-python3 -m venv venv
-source venv/bin/activate
+echo "➡️ Download aplikasi dari GitHub..."
+sudo mkdir -p $PROJECT_DIR
+sudo chown $USER:$USER $PROJECT_DIR
+curl -sL https://raw.githubusercontent.com/DOT-SUNDA/dotdx/refs/heads/main/api.py -o $PROJECT_DIR/$APP_NAME.py
 
-# Instal Flask dan pustaka lainnya
-echo "📚 Menginstal Flask dan pustaka tambahan..."
-pip3 install flask requests
+echo "➡️ Buat user khusus (tanpa password)..."
+sudo adduser --system --group --no-create-home $APP_USER
 
-# Membuat direktori aplikasi
-APP_DIR="api_manager"
-TEMPLATES_DIR="$APP_DIR/templates"
-STATIC_DIR="$APP_DIR/static"
+echo "➡️ Setup virtualenv & install dependencies..."
+python3 -m venv $PROJECT_DIR/venv
+$PROJECT_DIR/venv/bin/pip install --upgrade pip flask requests
 
-echo "📂 Membuat struktur direktori aplikasi..."
-mkdir -p $TEMPLATES_DIR $STATIC_DIR
+echo "➡️ Setup systemd service untuk Gunicorn..."
+sudo tee /etc/systemd/system/$APP_NAME.service > /dev/null <<EOF
+[Unit]
+Description=Gunicorn for $APP_NAME
+After=network.target
 
-# Membuat file aplikasi utama
-APP_FILE="$APP_DIR/app.py"
-cat <<EOF >$APP_FILE
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-import os
-import requests
+[Service]
+User=$APP_USER
+Group=www-data
+WorkingDirectory=$PROJECT_DIR
+Environment="PATH=$PROJECT_DIR/venv/bin"
+ExecStart=$PROJECT_DIR/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:$APP_PORT $APP_NAME:app
 
-app = Flask(__name__)
+[Install]
+WantedBy=multi-user.target
+EOF
 
-# Konfigurasi
-TEMP_FOLDER = "temp"
-os.makedirs(TEMP_FOLDER, exist_ok=True)
-API_LIST_FILE = os.path.join(TEMP_FOLDER, "api_list.txt")
-LINK_LIST_FILE = os.path.join(TEMP_FOLDER, "link_list.txt")
-PORT = 5000
+echo "➡️ Enable & start Gunicorn service..."
+sudo systemctl daemon-reload
+sudo systemctl enable $APP_NAME
+sudo systemctl restart $APP_NAME
 
-def read_file(filename):
-    if os.path.exists(filename):
-        with open(filename, 'r') as file:
-            return file.read().strip().split('\n')
-    return []
+echo "➡️ Setup Nginx config..."
+sudo tee /etc/nginx/sites-available/$APP_NAME > /dev/null <<EOF
+server {
+    listen 80;
+    server_name $DOMAIN;
 
-def write_file(filename, data):
-    with open(filename, 'w') as file:
-        file.write('\n'.join(data))
-
-def split_links(api_list, links):
-    split_result = {}
-    api_count = len(api_list)
-    for i, link in enumerate(links):
-        group_index = i % api_count
-        api = api_list[group_index]
-        if api not in split_result:
-            split_result[api] = []
-        split_result[api].append(link)
-    return split_result
-
-@app.route("/")
-def index():
-    api_list = read_file(API_LIST_FILE)
-    link_list = read_file(LINK_LIST_FILE)
-    return render_template("index.html", api_list=api_list, link_list=link_list)
-
-@app.route("/add_api", methods=["POST"])
-def add_api():
-    api = request.form.get("api")
-    api_list = read_file(API_LIST_FILE)
-    if api and api not in api_list:
-        api_list.append(api)
-        write_file(API_LIST_FILE, api_list)
-    return redirect(url_for("index"))
-
-@app.route("/add_link", methods=["POST"])
-def add_link():
-    link = request.form.get("link")
-    link_list = read_file(LINK_LIST_FILE)
-    if link and link not in link_list:
-        link_list.append(link)
-        write_file(LINK_LIST_FILE, link_list)
-    return redirect(url_for("index"))
-
-@app.route("/split", methods=["POST"])
-def split():
-    api_list = read_file(API_LIST_FILE)
-    link_list = read_file(LINK_LIST_FILE)
-    if not api_list or not link_list:
-        return jsonify({"status": "error", "message": "Daftar API atau Link kosong."})
-    
-    split_result = split_links(api_list, link_list)
-    for api, links in split_result.items():
-        file_name = os.path.join(TEMP_FOLDER, f"link_{api}.txt")
-        write_file(file_name, links)
-    
-    return jsonify({"status": "success", "message": "Link berhasil dibagi."})
-
-@app.route("/update_time", methods=["POST"])
-def update_time():
-    buka_jam = request.form.get("buka_jam")
-    tutup_jam = request.form.get("tutup_jam")
-    if not buka_jam or not tutup_jam:
-        return jsonify({"status": "error", "message": "Jam buka dan tutup diperlukan."})
-
-    api_list = read_file(API_LIST_FILE)
-    json_payload = {
-        "buka_jam": int(buka_jam),
-        "buka_menit": 30,
-        "tutup_jam": int(tutup_jam),
-        "tutup_menit": 0
+    location / {
+        proxy_pass http://127.0.0.1:$APP_PORT;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     }
-
-    responses = {}
-    for api in api_list:
-        url = f"http://{api}:{PORT}/update-waktu"
-        try:
-            response = requests.post(url, json=json_payload)
-            responses[api] = response.text
-        except requests.RequestException as e:
-            responses[api] = str(e)
-
-    return jsonify({"status": "success", "responses": responses})
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8080)
+}
 EOF
 
-# Membuat file HTML template
-TEMPLATE_FILE="$TEMPLATES_DIR/index.html"
-cat <<EOF >$TEMPLATE_FILE
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Manager Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-dark text-light">
-    <div class="container mt-4">
-        <h1 class="mb-4 text-center">API Manager Panel</h1>
-        
-        <!-- Menu utama -->
-        <div class="card bg-secondary mb-3">
-            <div class="card-body text-center">
-                <h3 class="card-title">Pilih Opsi</h3>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#apiSection" aria-expanded="false">
-                        Kelola API
-                    </button>
-                    <button class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#linkSection" aria-expanded="false">
-                        Kelola Link
-                    </button>
-                    <button class="btn btn-warning" data-bs-toggle="collapse" data-bs-target="#splitSection" aria-expanded="false">
-                        Bagi Link ke API
-                    </button>
-                </div>
-            </div>
-        </div>
+sudo ln -sf /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
 
-        <!-- Kelola API -->
-        <div id="apiSection" class="collapse">
-            <div class="card bg-secondary mb-3">
-                <div class="card-body">
-                    <h4>Daftar API</h4>
-                    <form method="POST" action="/add_api" class="mb-3">
-                        <div class="input-group">
-                            <input type="text" name="api" class="form-control" placeholder="Tambahkan API (IP/Domain)">
-                            <button class="btn btn-primary">Tambah</button>
-                        </div>
-                    </form>
-                    <ul class="list-group">
-                        {% for api in api_list %}
-                            <li class="list-group-item bg-dark text-light">{{ api }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
+echo "➡️ Pasang SSL Certbot (otomatis konfigurasi Nginx)..."
+sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m admin@$DOMAIN
 
-        <!-- Kelola Link -->
-        <div id="linkSection" class="collapse">
-            <div class="card bg-secondary mb-3">
-                <div class="card-body">
-                    <h4>Daftar Link</h4>
-                    <form method="POST" action="/add_link" class="mb-3">
-                        <div class="input-group">
-                            <input type="text" name="link" class="form-control" placeholder="Tambahkan Link">
-                            <button class="btn btn-success">Tambah</button>
-                        </div>
-                    </form>
-                    <ul class="list-group">
-                        {% for link in link_list %}
-                            <li class="list-group-item bg-dark text-light">{{ link }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bagi Link ke API -->
-        <div id="splitSection" class="collapse">
-            <div class="card bg-secondary mb-3">
-                <div class="card-body">
-                    <h4>Bagi Link ke API</h4>
-                    <p>Tekan tombol di bawah untuk membagi link secara merata ke API.</p>
-                    <button class="btn btn-warning" onclick="splitLinks()">Bagi Link</button>
-                    <div id="splitResult" class="mt-3"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        async function splitLinks() {
-            const response = await fetch("/split", { method: "POST" });
-            const data = await response.json();
-            const resultDiv = document.getElementById("splitResult");
-            if (data.status === "success") {
-                resultDiv.innerHTML = `<p class="text-success">${data.message}</p>`;
-            } else {
-                resultDiv.innerHTML = `<p class="text-danger">${data.message}</p>`;
-            }
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-EOF
-
-# Jalankan aplikasi Flask
-echo "🚀 Menjalankan API Manager..."
-cd $APP_DIR
-python3 app.py
+echo "✅ Selesai! Panel Flask berjalan di https://$DOMAIN"
