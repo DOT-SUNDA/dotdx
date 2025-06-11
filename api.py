@@ -71,11 +71,12 @@ HTML_TEMPLATE = '''
     <form method="POST" action="/add_ip" class="mb-4">
       <label class="block font-semibold mb-1 text-blue-300">Tambah IP (satu per baris):</label>
       <textarea name="ips" class="w-full bg-gray-800 border border-gray-700 p-2 rounded text-white mb-2" rows="3"></textarea>
+    </form>
       <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Tambah</button>
-      <button onclick="document.getElementById('ipModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4">
+      
+<button onclick="document.getElementById('ipModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4">
   📜 Lihat Daftar IP
 </button>
-    </form>
 
     <form method="POST" action="/send_link" class="mb-6">
       <label class="block font-semibold mb-1 text-blue-300">Link per baris:</label>
