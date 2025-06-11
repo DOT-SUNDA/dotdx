@@ -27,128 +27,110 @@ ip_list = load_ips()
 
 LOGIN_TEMPLATE = '''
 <!DOCTYPE html>
-<html lang="id" class=""><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"></head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <form method="POST" action="/login" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 class="text-2xl font-bold mb-6 text-center">Login Panel</h2>
-        {% if error %}<p class="text-red-500">{{ error }}</p>{% endif %}
-        <label>Username:</label>
-        <input name="username" class="border w-full p-2 rounded mb-4" required>
-        <label>Password:</label>
-        <input name="password" type="password" class="border w-full p-2 rounded mb-4" required>
-        <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Login</button>
-    </form>
-</body></html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen font-mono">
+  <form method="POST" action="/login" class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-sm border border-gray-700">
+    <h2 class="text-2xl font-bold mb-6 text-center text-green-400">🔐 Panel Login</h2>
+    {% if error %}
+      <p class="text-red-500 mb-4">{{ error }}</p>
+    {% endif %}
+    <label class="block mb-1">Username:</label>
+    <input name="username" class="bg-gray-700 text-white border border-gray-600 w-full p-2 rounded mb-4" required />
+    <label class="block mb-1">Password:</label>
+    <input name="password" type="password" class="bg-gray-700 text-white border border-gray-600 w-full p-2 rounded mb-4" required />
+    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white p-2 rounded">Login</button>
+  </form>
+</body>
+</html>
 '''
 
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
-<html lang="id" class="">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-    <div class="max-w-4xl mx-auto p-4">
-        <div class="flex justify-between items-center">
-        <button onclick="toggleTheme()" class="text-sm text-gray-600 dark:text-gray-300 hover:underline">
-    🌙 / ☀️ Mode
-</button>
-            <h2 class="text-2xl font-bold text-gray-800">Control Panel Multi RDP</h2>
-            <form action="/logout" method="POST">
-                <button class="text-sm text-red-500 hover:underline">Logout</button>
-            </form>
-        </div>
-
-        <form method="POST" action="/add_ip" class="mt-6">
-            <label class="block font-bold">Tambah IP (satu per baris):</label>
-            <textarea name="ips" class="w-full border p-2 rounded mt-1"></textarea>
-            <button class="mt-2 bg-green-500 text-white px-4 py-2 rounded">Tambah</button>
-        </form>
-
-        <form method="POST" action="/clear_ip" class="mt-2">
-            <button class="bg-yellow-500 text-white px-4 py-2 rounded">Bersihkan Semua IP</button>
-        </form>
-
-        <h3 class="mt-6 font-bold">Daftar IP:</h3>
-        <ul class="list-disc list-inside">
-            {% for ip in ip_list %}
-                <li>{{ ip }}
-                    <form method="POST" action="/delete_ip" style="display:inline">
-                        <input type="hidden" name="ip" value="{{ ip }}">
-                        <button class="text-red-500 text-sm ml-2">Hapus</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-
-        <form method="POST" action="/send_link" class="mt-6">
-            <label class="block font-bold">Link per baris:</label>
-            <textarea name="links" class="w-full border p-2 rounded mt-1"></textarea>
-            <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded">Kirim Link</button>
-        </form>
-
-        <form method="POST" action="/send_waktu" class="mt-6">
-            <label class="block font-bold">Waktu Operasi (Jam & Menit):</label>
-            <div class="flex space-x-2 mt-1">
-                <input name="buka_jam" placeholder="Buka Jam" class="border p-2 rounded w-1/4">
-                <input name="buka_menit" placeholder="Buka Menit" class="border p-2 rounded w-1/4">
-                <input name="tutup_jam" placeholder="Tutup Jam" class="border p-2 rounded w-1/4">
-                <input name="tutup_menit" placeholder="Tutup Menit" class="border p-2 rounded w-1/4">
-            </div>
-            <button class="mt-2 bg-indigo-500 text-white px-4 py-2 rounded">Kirim Waktu</button>
-        </form>
-
-{% if results %}
-<div id="toast-container" class="fixed bottom-5 right-5 space-y-2 z-50">
-    {% for res in results %}
-    <div class="bg-white border border-gray-300 rounded-lg shadow-md px-4 py-3 text-sm text-gray-800 animate-slide-in">
-        {{ res }}
+<body class="bg-gray-900 text-gray-200 font-mono min-h-screen">
+  <div class="max-w-5xl mx-auto p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-3xl font-bold text-green-400">🖥️ Multi-RDP Control</h2>
+      <form action="/logout" method="POST">
+        <button class="text-sm text-red-400 hover:text-red-300">Logout</button>
+      </form>
     </div>
-    {% endfor %}
-</div>
-<script>
-    // Hapus toast setelah 6 detik
-    setTimeout(() => {
-        const container = document.getElementById('toast-container');
-        if (container) container.remove();
-    }, 6000);
-</script>
-<style>
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.animate-slide-in {
-    animation: slideIn 0.4s ease-out;
-}
-</style>
-{% endif %}
 
+    <form method="POST" action="/add_ip" class="mb-4">
+      <label class="block font-semibold mb-1 text-blue-300">Tambah IP (satu per baris):</label>
+      <textarea name="ips" class="w-full bg-gray-800 border border-gray-700 p-2 rounded text-white mb-2" rows="3"></textarea>
+      <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Tambah</button>
+    </form>
+
+    <h3 class="text-xl font-bold mb-2 text-blue-400">Daftar IP:</h3>
+    <ul class="list-disc list-inside mb-6">
+      {% for ip in ip_list %}
+        <li>{{ ip }}
+          <form method="POST" action="/delete_ip" class="inline">
+            <input type="hidden" name="ip" value="{{ ip }}">
+            <button class="text-red-400 text-sm ml-2 hover:text-red-300">Hapus</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+    <form method="POST" action="/clear_ip" class="mb-6">
+      <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded">Hapus Semua</button>
+    </form>
+
+    <form method="POST" action="/send_link" class="mb-6">
+      <label class="block font-semibold mb-1 text-blue-300">Link per baris:</label>
+      <textarea name="links" class="w-full bg-gray-800 border border-gray-700 p-2 rounded text-white mb-2" rows="4"></textarea>
+      <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Kirim Link</button>
+    </form>
+
+    <form method="POST" action="/send_waktu">
+      <label class="block font-semibold mb-1 text-blue-300">Waktu Operasi (Jam & Menit):</label>
+      <div class="flex flex-wrap gap-2 mb-2">
+        <input name="buka_jam" placeholder="Buka Jam" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
+        <input name="buka_menit" placeholder="Buka Menit" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
+        <input name="tutup_jam" placeholder="Tutup Jam" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
+        <input name="tutup_menit" placeholder="Tutup Menit" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
+      </div>
+      <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">Kirim Waktu</button>
+    </form>
+
+    {% if results %}
+    <div id="toast-container" class="fixed bottom-5 right-5 space-y-2 z-50">
+      {% for res in results %}
+      <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-lg px-4 py-3 text-sm text-green-300 animate-slide-in">
+        {{ res }}
+      </div>
+      {% endfor %}
     </div>
     <script>
-    function toggleTheme() {
-        const html = document.documentElement;
-        if (html.classList.contains('dark')) {
-            html.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        } else {
-            html.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        }
-    }
-
-    // Auto apply theme from localStorage
-    (function() {
-        const theme = localStorage.getItem('theme');
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        }
-    })();
-</script>
+      setTimeout(() => {
+        const container = document.getElementById('toast-container');
+        if (container) container.remove();
+      }, 6000);
+    </script>
+    <style>
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-slide-in {
+        animation: slideIn 0.4s ease-out;
+      }
+    </style>
+    {% endif %}
+  </div>
 </body>
 </html>
 '''
