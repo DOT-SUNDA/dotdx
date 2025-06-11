@@ -74,20 +74,9 @@ HTML_TEMPLATE = '''
       <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Tambah</button>
     </form>
 
-    <h3 class="text-xl font-bold mb-2 text-blue-400">Daftar IP:</h3>
-    <ul class="list-disc list-inside mb-6">
-      {% for ip in ip_list %}
-        <li>{{ ip }}
-          <form method="POST" action="/delete_ip" class="inline">
-            <input type="hidden" name="ip" value="{{ ip }}">
-            <button class="text-red-400 text-sm ml-2 hover:text-red-300">Hapus</button>
-          </form>
-        </li>
-      {% endfor %}
-    </ul>
-    <form method="POST" action="/clear_ip" class="mb-6">
-      <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded">Hapus Semua</button>
-    </form>
+<button onclick="document.getElementById('ipModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4">
+  📜 Lihat Daftar IP
+</button>
 
     <form method="POST" action="/send_link" class="mb-6">
       <label class="block font-semibold mb-1 text-blue-300">Link per baris:</label>
@@ -105,6 +94,32 @@ HTML_TEMPLATE = '''
       </div>
       <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">Kirim Waktu</button>
     </form>
+
+<div id="ipModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-gray-900 border border-gray-700 rounded-lg p-6 w-full max-w-lg relative">
+    <h3 class="text-xl font-bold mb-4 text-green-400">📋 Daftar IP</h3>
+    <ul class="mb-4 space-y-2 max-h-64 overflow-y-auto pr-2">
+      {% for ip in ip_list %}
+        <li class="flex justify-between items-center bg-gray-800 px-3 py-2 rounded">
+          <span>{{ ip }}</span>
+          <form method="POST" action="/delete_ip" class="inline">
+            <input type="hidden" name="ip" value="{{ ip }}">
+            <button class="text-red-400 hover:text-red-300 text-sm">Hapus</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="flex justify-end gap-2">
+      <form method="POST" action="/clear_ip">
+        <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm">Hapus Semua</button>
+      </form>
+      <button onclick="document.getElementById('ipModal').classList.add('hidden')" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm">
+        Tutup
+      </button>
+    </div>
+  </div>
+</div>
+
 
     {% if results %}
     <div id="toast-container" class="fixed bottom-5 right-5 space-y-2 z-50">
