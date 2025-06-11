@@ -62,13 +62,15 @@ HTML_TEMPLATE = '''
 <body class="bg-gray-900 text-gray-200 font-mono min-h-screen">
   <div class="max-w-5xl mx-auto p-6">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-3xl font-bold text-yellow-400">🖥RDP Control</h2>
-      <form action="/logout" method="POST">
-        <button onclick="document.getElementById('ipModal').classList.remove('hidden')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded"">
-          RDP
-        </button>
-        <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">LOGOUT</button>
-      </form>
+      <h2 class="text-3xl font-bold text-yellow-400">🖥 Control</h2>
+      <div class="flex gap-2">
+  <button type="button" onclick="document.getElementById('ipModal').classList.remove('hidden')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded">
+    RDP
+  </button>
+  <form action="/logout" method="POST">
+    <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">LOGOUT</button>
+  </form>
+</div>
     </div>
 
     <form method="POST" action="/add_ip" class="mb-4">
