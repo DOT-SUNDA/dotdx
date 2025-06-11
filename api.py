@@ -10,8 +10,8 @@ app.secret_key = 'rahasia-super-aman'
 
 PORT = 5000
 IP_FILE = "ip_list.json"
-USERNAME = "admin"
-PASSWORD = "admin123"
+USERNAME = "memek"
+PASSWORD = "kontol123"
 
 def load_ips():
     if os.path.exists(IP_FILE):
