@@ -99,14 +99,32 @@ HTML_TEMPLATE = '''
             <button class="mt-2 bg-indigo-500 text-white px-4 py-2 rounded">Kirim Waktu</button>
         </form>
 
-        {% if results %}
-        <div class="mt-6">
-            <h3 class="font-bold">Hasil:</h3>
-            <ul class="list-disc list-inside">
-                {% for res in results %}<li>{{ res }}</li>{% endfor %}
-            </ul>
-        </div>
-        {% endif %}
+{% if results %}
+<div id="toast-container" class="fixed bottom-5 right-5 space-y-2 z-50">
+    {% for res in results %}
+    <div class="bg-white border border-gray-300 rounded-lg shadow-md px-4 py-3 text-sm text-gray-800 animate-slide-in">
+        {{ res }}
+    </div>
+    {% endfor %}
+</div>
+<script>
+    // Hapus toast setelah 6 detik
+    setTimeout(() => {
+        const container = document.getElementById('toast-container');
+        if (container) container.remove();
+    }, 6000);
+</script>
+<style>
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-in {
+    animation: slideIn 0.4s ease-out;
+}
+</style>
+{% endif %}
+
     </div>
 </body>
 </html>
