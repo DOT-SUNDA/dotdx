@@ -27,7 +27,7 @@ ip_list = load_ips()
 
 LOGIN_TEMPLATE = '''
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="id" class=""><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login</title><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"></head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <form method="POST" action="/login" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
@@ -44,16 +44,19 @@ LOGIN_TEMPLATE = '''
 
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
     <div class="max-w-4xl mx-auto p-4">
         <div class="flex justify-between items-center">
+        <button onclick="toggleTheme()" class="text-sm text-gray-600 dark:text-gray-300 hover:underline">
+    🌙 / ☀️ Mode
+</button>
             <h2 class="text-2xl font-bold text-gray-800">Control Panel Multi RDP</h2>
             <form action="/logout" method="POST">
                 <button class="text-sm text-red-500 hover:underline">Logout</button>
@@ -126,6 +129,26 @@ HTML_TEMPLATE = '''
 {% endif %}
 
     </div>
+    <script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    // Auto apply theme from localStorage
+    (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    })();
+</script>
 </body>
 </html>
 '''
