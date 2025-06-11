@@ -62,35 +62,34 @@ HTML_TEMPLATE = '''
 <body class="bg-gray-900 text-gray-200 font-mono min-h-screen">
   <div class="max-w-5xl mx-auto p-6">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-3xl font-bold text-green-400">🖥️ Multi-RDP Control</h2>
+      <h2 class="text-3xl font-bold text-yellow-400">🖥RDP Control</h2>
       <form action="/logout" method="POST">
-        <button class="text-sm text-red-400 hover:text-red-300">Logout</button>
+        <button onclick="document.getElementById('ipModal').classList.remove('hidden')" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded"">
+          RDP
+        </button>
+        <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">LOGOUT</button>
       </form>
     </div>
 
     <form method="POST" action="/add_ip" class="mb-4">
-      <label class="block font-semibold mb-1 text-blue-300">Tambah IP (satu per baris):</label>
+      <label class="block font-semibold mb-1 text-white-300">Tambah IP per baris:</label>
       <textarea name="ips" class="w-full bg-gray-800 border border-gray-700 p-2 rounded text-white mb-2" rows="3"></textarea>
-    </form>
       <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Tambah</button>
-      
-<button onclick="document.getElementById('ipModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4">
-  📜 Lihat Daftar IP
-</button>
+    </form>
 
     <form method="POST" action="/send_link" class="mb-6">
-      <label class="block font-semibold mb-1 text-blue-300">Link per baris:</label>
+      <label class="block font-semibold mb-1 text-white-300">Link per baris:</label>
       <textarea name="links" class="w-full bg-gray-800 border border-gray-700 p-2 rounded text-white mb-2" rows="4"></textarea>
       <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Kirim Link</button>
     </form>
 
     <form method="POST" action="/send_waktu">
-      <label class="block font-semibold mb-1 text-blue-300">Waktu Operasi (Jam & Menit):</label>
+      <label class="block font-semibold mb-1 text-white-300">Waktu Operasi (Jam & Menit):</label>
       <div class="flex flex-wrap gap-2 mb-2">
-        <input name="buka_jam" placeholder="Buka Jam" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
-        <input name="buka_menit" placeholder="Buka Menit" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
-        <input name="tutup_jam" placeholder="Tutup Jam" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
-        <input name="tutup_menit" placeholder="Tutup Menit" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
+        <input name="buka_jam" placeholder="Jam" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
+        <input name="buka_menit" placeholder="Menit" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
+        <input name="tutup_jam" placeholder="Jam" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
+        <input name="tutup_menit" placeholder="Menit" class="bg-gray-800 border border-gray-700 p-2 rounded w-24 text-white">
       </div>
       <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">Kirim Waktu</button>
     </form>
