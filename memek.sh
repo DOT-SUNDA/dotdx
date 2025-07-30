@@ -128,6 +128,7 @@ function show_menu() {
 }
 
 while true; do
+    clear
     show_menu
     read -rp "Pilih opsi [0-8]: " opt
     case $opt in
