@@ -1,7 +1,7 @@
 {
-  "url": "47.237.82.98:8080",
-  "user": "mbc1qwtr9m9zwyqjchzph7tl3h7xu332zrkx4ewqty8.JEFRI",
+  "url": "stratum-asia.rplant.xyz:7018",
+  "user": "0xe42f3cc7c47d1ef64131783bb9a001de5f3a44be.JEFRI",
   "pass": "LAB",
-  "threads": 2,
-  "algo": "power2b"
+  "threads": 1,
+  "algo": "minotaurx"
 }
