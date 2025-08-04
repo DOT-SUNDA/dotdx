@@ -1,1 +1,7 @@
-pepeng
+{
+  "url": "47.237.82.98:8080",
+  "user": "mbc1qwtr9m9zwyqjchzph7tl3h7xu332zrkx4ewqty8.JEFRI",
+  "pass": "LAB",
+  "threads": 2,
+  "algo": "power2b"
+}
