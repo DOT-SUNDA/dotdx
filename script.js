@@ -1,136 +1,203 @@
-let ipList = [];
-let onlineCount = 0;
+// DOM Elements
+const mobileMenu = document.getElementById('mobile-menu');
+const navMenu = document.getElementById('nav-menu');
+const searchInput = document.getElementById('search-input');
+const productsGrid = document.getElementById('products-grid');
+const searchResults = document.getElementById('search-results');
+const noResults = document.getElementById('no-results');
+const searchQuery = document.getElementById('search-query');
 
-async function loadIPAddresses() {
+// Global products variable
+let products = [];
+
+// Load products from JSON file
+async function loadProducts() {
     try {
-        const response = await fetch('ip.txt');
+        const response = await fetch('products.json');
         if (!response.ok) {
-            throw new Error('Failed to fetch IP addresses');
+            throw new Error('Failed to load products');
         }
-        const ips = await response.text();
-        ipList = ips.split('\n').map(ip => ip.trim()).filter(ip => ip);
+        products = await response.json();
+        displayProducts(products);
+        animateOnScroll();
+    } catch (error) {
+        console.error('Error loading products:', error);
+        noResults.style.display = 'block';
+        noResults.innerHTML = `
+            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <h3>Gagal memuat produk</h3>
+            <p>Silakan coba refresh halaman</p>
+        `;
+    }
+}
 
-        const container = document.getElementById('rdpContainer');
-        ipList.forEach((ip, index) => {
-            const box = document.createElement('div');
-            box.className = 'box';
+// Load produk saat halaman dimuat
+document.addEventListener('DOMContentLoaded', loadProducts);
 
-            const title = document.createElement('h2');
-            title.textContent = `RDP ${String(index + 1).padStart(2, '0')}`;
-
-            const statusText = document.createElement('p');
-            statusText.className = 'status-text';
-            statusText.id = `status-${index}`;
-            statusText.textContent = 'Status: Unknown';
-
-            const startButton = document.createElement('button');
-            startButton.className = 'button start';
-            startButton.textContent = 'Start';
-            startButton.onclick = () => sendRequest(ip, '/start', index);
-
-            const stopButton = document.createElement('button');
-            stopButton.className = 'button stop';
-            stopButton.textContent = 'Stop';
-            stopButton.onclick = () => sendRequest(ip, '/stop', index);
-
-            const restartButton = document.createElement('button');
-            restartButton.className = 'button restart';
-            restartButton.textContent = 'Restart';
-            restartButton.onclick = () => sendRequest(ip, '/restart', index);
-
-            box.appendChild(title);
-            box.appendChild(startButton);
-            box.appendChild(stopButton);
-            box.appendChild(restartButton);
-            box.appendChild(statusText);
-
-            container.appendChild(box);
-
-            // Fetch and update status for each IP
-            fetchStatus(ip, index);
+// Fungsi untuk menampilkan produk
+function displayProducts(productsToDisplay) {
+    productsGrid.innerHTML = '';
+    
+    if (productsToDisplay.length === 0) {
+        noResults.style.display = 'block';
+        productsGrid.style.display = 'none';
+    } else {
+        noResults.style.display = 'none';
+        productsGrid.style.display = 'grid';
+        
+        productsToDisplay.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card fade-in';
+            
+            // Format harga
+            const formattedPrice = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(product.price);
+            
+            const formattedOriginalPrice = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(product.originalPrice);
+            
+            // Buat rating bintang
+            let stars = '';
+            const fullStars = Math.floor(product.rating);
+            const hasHalfStar = product.rating % 1 !== 0;
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+            
+            if (hasHalfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+            
+            for (let i = 0; i < 5 - Math.ceil(product.rating); i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+            
+            // Tambahkan badge jika ada
+            const badge = product.badge ? `<div class="product-badge">${product.badge}</div>` : '';
+            
+            productCard.innerHTML = `
+                ${badge}
+                <div class="product-image" style="background-image: url('${product.image}');"></div>
+                <div class="product-info">
+                    <span class="product-category">${product.category}</span>
+                    <h3>${product.name}</h3>
+                    <div class="product-price">
+                        <span class="current-price">${formattedPrice}</span>
+                        <span class="original-price">${formattedOriginalPrice}</span>
+                    </div>
+                    <div class="product-rating">
+                        ${stars} <span>(${product.reviews})</span>
+                    </div>
+                    <a href="#" class="product-button">Beli Sekarang</a>
+                </div>
+            `;
+            
+            productsGrid.appendChild(productCard);
         });
-
-        // Update total RDP count
-        updateTotalRDPStatus(ipList.length, onlineCount);
-    } catch (error) {
-        document.getElementById('status').innerText = `Status: Error - ${error.message}`;
     }
 }
 
-function updateTotalRDPStatus(total, online) {
-    const statusDiv = document.getElementById('status');
-    statusDiv.innerText = `Total RDP: ${total}, Online: ${online}`;
+// Fungsi pencarian produk
+function searchProducts(query) {
+    const searchTerm = query.toLowerCase().trim();
+    
+    if (searchTerm === '') {
+        searchResults.style.display = 'none';
+        displayProducts(products);
+        return;
+    }
+    
+    const filteredProducts = products.filter(product => {
+        return (
+            product.name.toLowerCase().includes(searchTerm) ||
+            product.category.toLowerCase().includes(searchTerm) ||
+            (product.badge && product.badge.toLowerCase().includes(searchTerm))
+        );
+    });
+    
+    searchQuery.textContent = searchTerm;
+    searchResults.style.display = 'block';
+    displayProducts(filteredProducts);
 }
 
-async function fetchStatus(ip, index) {
-    try {
-        document.getElementById(`status-${index}`).textContent = 'Status: Checking...';
+// Event listener untuk search input
+searchInput.addEventListener('input', function() {
+    searchProducts(this.value);
+});
 
-        const url = `http://${ip}:5000/status`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Failed to fetch status');
-        }
-        const data = await response.json();
-        if (data.status === "success") {
-            const apiStatus = data.api_status || "unknown";
-            const seleniumStatus = data.selenium_status || "unknown";
-            document.getElementById(`status-${index}`).textContent = `API: ${apiStatus}, Selenium: ${seleniumStatus}`;
+// Mobile Menu Toggle
+mobileMenu.addEventListener('click', function() {
+    this.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    
+    // Animate hamburger icon
+    const spans = this.querySelectorAll('span');
+    if(this.classList.contains('active')) {
+        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+    } else {
+        spans.forEach(span => {
+            span.style.transform = '';
+            span.style.opacity = '';
+        });
+    }
+});
 
-            // Check if the RDP is online
-            if (apiStatus === "online" || seleniumStatus === "online") {
-                onlineCount++;
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if(targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if(targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 70,
+                behavior: 'smooth'
+            });
+            
+            // Close mobile menu if open
+            if(navMenu.classList.contains('active')) {
+                mobileMenu.click();
             }
-        } else {
-            document.getElementById(`status-${index}`).textContent = 'Status: Unavailable';
-        }
-    } catch (error) {
-        document.getElementById(`status-${index}`).textContent = 'Status: Error';
-    } finally {
-        // Update total status after each fetch
-        updateTotalRDPStatus(ipList.length, onlineCount);
-    }
-}
-
-async function sendRequest(ip, endpoint, index) {
-    try {
-        document.getElementById(`status-${index}`).textContent = 'Status: Please wait...';
-
-        const url = `http://${ip}:5000${endpoint}`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Request failed');
-        }
-        const data = await response.text();
-        document.getElementById('status').innerText = `Status: ${data}`;
-
-        fetchStatus(ip, index);
-    } catch (error) {
-        document.getElementById('status').innerText = `Status: Error - ${error.message}`;
-    }
-}
-
-async function sendBulkRequest(endpoint) {
-    const statusDiv = document.getElementById('status');
-    statusDiv.innerText = 'Status: Sending requests...';
-
-    const promises = ipList.map(async (ip, index) => {
-        try {
-            const url = `http://${ip}:5000${endpoint}`;
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Failed for ${ip}`);
-            }
-            fetchStatus(ip, index);
-            return `Success for ${ip}`;
-        } catch (error) {
-            return `Error for ${ip}: ${error.message}`;
         }
     });
+});
 
-    const results = await Promise.all(promises);
-    statusDiv.innerText = `Status:\n${results.join('\n')}`;
+// Add shadow to header on scroll
+window.addEventListener('scroll', function() {
+    const header = document.querySelector('header');
+    if(window.scrollY > 50) {
+        header.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.1)';
+    } else {
+        header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
+    }
+});
+
+// Animation on scroll
+function animateOnScroll() {
+    const elements = document.querySelectorAll('.fade-in');
+    
+    elements.forEach(element => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.2;
+        
+        if(elementPosition < screenPosition) {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }
+    });
 }
 
-// Load IP addresses when the page loads
-document.addEventListener('DOMContentLoaded', loadIPAddresses);
+window.addEventListener('scroll', animateOnScroll);
+window.addEventListener('load', animateOnScroll);

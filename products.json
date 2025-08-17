@@ -1,0 +1,90 @@
+[
+    {
+        "id": 1,
+        "name": "iPhone 14 Pro Max",
+        "category": "Smartphone",
+        "price": 18999000,
+        "originalPrice": 21999000,
+        "image": "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aXBob25lfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "rating": 5,
+        "reviews": 128,
+        "badge": "Terlaris"
+    },
+    {
+        "id": 2,
+        "name": "MacBook Pro M2 2023",
+        "category": "Laptop",
+        "price": 24499000,
+        "originalPrice": 26999000,
+        "image": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFjYm9va3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "rating": 4.5,
+        "reviews": 96,
+        "badge": ""
+    },
+    {
+        "id": 3,
+        "name": "PlayStation 5 Digital Edition",
+        "category": "Gaming",
+        "price": 8499000,
+        "originalPrice": 9999000,
+        "image": "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGxheXN0YXRpb24lMjA1fGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "rating": 4,
+        "reviews": 75,
+        "badge": "Baru"
+    },
+    {
+        "id": 4,
+        "name": "Sony WH-1000XM5",
+        "category": "Audio",
+        "price": 4799000,
+        "originalPrice": 5499000,
+        "image": "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aGVhZHBob25lc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "rating": 5,
+        "reviews": 142,
+        "badge": ""
+    },
+    {
+        "id": 5,
+        "name": "Samsung Galaxy S23 Ultra",
+        "category": "Smartphone",
+        "price": 15999000,
+        "originalPrice": 17999000,
+        "image": "https://images.unsplash.com/photo-1676046187538-52f5d0b1d0a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHNhbXN1bmclMjBzMjN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
+        "rating": 4.5,
+        "reviews": 89,
+        "badge": "Diskon"
+    },
+    {
+        "id": 6,
+        "name": "Apple Watch Series 8",
+        "category": "Wearable",
+        "price": 6999000,
+        "originalPrice": 7999000,
+        "image": "https://images.unsplash.com/photo-1678911015104-d62d8a2f8d3f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXBwbGUlMjB3YXRjaHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "rating": 4,
+        "reviews": 67,
+        "badge": ""
+    },
+    {
+        "id": 7,
+        "name": "Nintendo Switch OLED",
+        "category": "Gaming",
+        "price": 5499000,
+        "originalPrice": 5999000,
+        "image": "https://images.unsplash.com/photo-1638549505583-8030d8e2b1f3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmludGVuZG8lMjBzd2l0Y2h8ZW58MHx8MHx8fDA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "rating": 4.5,
+        "reviews": 53,
+        "badge": ""
+    },
+    {
+        "id": 8,
+        "name": "Dyson V15 Detect",
+        "category": "Home",
+        "price": 8999000,
+        "originalPrice": 9999000,
+        "image": "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZHlzb24lMjB2YWN1dW18ZW58MHx8MHx8fDA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "rating": 5,
+        "reviews": 112,
+        "badge": "Terlaris"
+    }
+]
