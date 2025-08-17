@@ -95,7 +95,7 @@ function displayProducts(productsToDisplay) {
                     <div class="product-rating">
                         ${stars} <span>(${product.reviews})</span>
                     </div>
-                    <a href="#" class="product-button">Beli Sekarang</a>
+                    <a href="${product.link}" class="product-button">Beli Sekarang</a>
                 </div>
             `;
             
