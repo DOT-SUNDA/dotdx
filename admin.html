@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Produk</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #eee;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .btn-edit {
+            background-color: #f39c12;
+            margin-right: 5px;
+        }
+        .btn-delete {
+            background-color: #e74c3c;
+        }
+        .btn-edit:hover {
+            background-color: #d35400;
+        }
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+        .notification {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .error {
+            background-color: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel - Manajemen Produk</h1>
+        
+        <div class="notification" id="notification"></div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('products')">Daftar Produk</div>
+            <div class="tab" onclick="openTab('add')">Tambah Produk</div>
+        </div>
+        
+        <div id="products" class="tab-content active">
+            <table id="products-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Rating</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="products-list">
+                    <!-- Produk akan dimuat di sini -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="add" class="tab-content">
+            <h2>Tambah Produk Baru</h2>
+            <form id="add-product-form">
+                <div class="form-group">
+                    <label for="name">Nama Produk:</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Kategori:</label>
+                    <select id="category" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="Smartphone">Smartphone</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Gaming">Gaming</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Wearable">Wearable</option>
+                        <option value="Home">Home</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">Harga:</label>
+                    <input type="number" id="price" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="originalPrice">Harga Asli:</label>
+                    <input type="number" id="originalPrice" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">URL Gambar:</label>
+                    <input type="url" id="image" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="rating">Rating (1-5):</label>
+                    <input type="number" id="rating" min="1" max="5" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reviews">Jumlah Review:</label>
+                    <input type="number" id="reviews" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="badge">Badge:</label>
+                    <select id="badge">
+                        <option value="">Tidak ada</option>
+                        <option value="Terlaris">Terlaris</option>
+                        <option value="Baru">Baru</option>
+                        <option value="Diskon">Diskon</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="link">Link Produk:</label>
+                    <input type="url" id="link" required>
+                </div>
+                
+                <button type="submit">Simpan Produk</button>
+            </form>
+        </div>
+        
+        <div id="edit" class="tab-content">
+            <h2>Edit Produk</h2>
+            <form id="edit-product-form">
+                <input type="hidden" id="edit-id">
+                
+                <div class="form-group">
+                    <label for="edit-name">Nama Produk:</label>
+                    <input type="text" id="edit-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-category">Kategori:</label>
+                    <select id="edit-category" required>
+                        <option value="">Pilih Kategori</option>
+                        <option value="Smartphone">Smartphone</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Gaming">Gaming</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Wearable">Wearable</option>
+                        <option value="Home">Home</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-price">Harga:</label>
+                    <input type="number" id="edit-price" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-originalPrice">Harga Asli:</label>
+                    <input type="number" id="edit-originalPrice" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-image">URL Gambar:</label>
+                    <input type="url" id="edit-image" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-rating">Rating (1-5):</label>
+                    <input type="number" id="edit-rating" min="1" max="5" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-reviews">Jumlah Review:</label>
+                    <input type="number" id="edit-reviews" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-badge">Badge:</label>
+                    <select id="edit-badge">
+                        <option value="">Tidak ada</option>
+                        <option value="Terlaris">Terlaris</option>
+                        <option value="Baru">Baru</option>
+                        <option value="Diskon">Diskon</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-link">Link Produk:</label>
+                    <input type="url" id="edit-link" required>
+                </div>
+                
+                <button type="submit" class="btn-edit">Update Produk</button>
+                <button type="button" onclick="cancelEdit()">Batal</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        
+        // Fungsi untuk memuat produk dari file JSON
+        async function loadProducts() {
+            try {
+                const response = await fetch('products.json');
+                products = await response.json();
+                displayProducts();
+            } catch (error) {
+                showNotification('Gagal memuat produk: ' + error.message, 'error');
+            }
+        }
+        
+        // Fungsi untuk menampilkan produk dalam tabel
+        function displayProducts() {
+            const tbody = document.getElementById('products-list');
+            tbody.innerHTML = '';
+            
+            products.forEach(product => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.category}</td>
+                    <td>${formatPrice(product.price)}</td>
+                    <td>${product.rating} ★</td>
+                    <td>
+                        <button class="btn-edit" onclick="editProduct(${product.id})">Edit</button>
+                        <button class="btn-delete" onclick="deleteProduct(${product.id})">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Fungsi untuk menambah produk baru
+        document.getElementById('add-product-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Generate ID baru
+            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+            
+            const newProduct = {
+                id: newId,
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                price: parseInt(document.getElementById('price').value),
+                originalPrice: parseInt(document.getElementById('originalPrice').value),
+                image: document.getElementById('image').value,
+                rating: parseFloat(document.getElementById('rating').value),
+                reviews: parseInt(document.getElementById('reviews').value),
+                badge: document.getElementById('badge').value,
+                link: document.getElementById('link').value
+            };
+            
+            products.push(newProduct);
+            
+            try {
+                await saveProducts();
+                this.reset();
+                openTab('products');
+                showNotification('Produk berhasil ditambahkan!', 'success');
+                displayProducts();
+            } catch (error) {
+                showNotification('Gagal menyimpan produk: ' + error.message, 'error');
+            }
+        });
+        
+        // Fungsi untuk mengedit produk
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            
+            document.getElementById('edit-id').value = product.id;
+            document.getElementById('edit-name').value = product.name;
+            document.getElementById('edit-category').value = product.category;
+            document.getElementById('edit-price').value = product.price;
+            document.getElementById('edit-originalPrice').value = product.originalPrice;
+            document.getElementById('edit-image').value = product.image;
+            document.getElementById('edit-rating').value = product.rating;
+            document.getElementById('edit-reviews').value = product.reviews;
+            document.getElementById('edit-badge').value = product.badge;
+            document.getElementById('edit-link').value = product.link;
+            
+            openTab('edit');
+        }
+        
+        // Fungsi untuk menyimpan perubahan edit
+        document.getElementById('edit-product-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const id = parseInt(document.getElementById('edit-id').value);
+            const productIndex = products.findIndex(p => p.id === id);
+            
+            if (productIndex === -1) {
+                showNotification('Produk tidak ditemukan!', 'error');
+                return;
+            }
+            
+            products[productIndex] = {
+                id: id,
+                name: document.getElementById('edit-name').value,
+                category: document.getElementById('edit-category').value,
+                price: parseInt(document.getElementById('edit-price').value),
+                originalPrice: parseInt(document.getElementById('edit-originalPrice').value),
+                image: document.getElementById('edit-image').value,
+                rating: parseFloat(document.getElementById('edit-rating').value),
+                reviews: parseInt(document.getElementById('edit-reviews').value),
+                badge: document.getElementById('edit-badge').value,
+                link: document.getElementById('edit-link').value
+            };
+            
+            try {
+                await saveProducts();
+                openTab('products');
+                showNotification('Produk berhasil diperbarui!', 'success');
+                displayProducts();
+            } catch (error) {
+                showNotification('Gagal memperbarui produk: ' + error.message, 'error');
+            }
+        });
+        
+        // Fungsi untuk menghapus produk
+        async function deleteProduct(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus produk ini?')) return;
+            
+            const productIndex = products.findIndex(p => p.id === id);
+            if (productIndex === -1) return;
+            
+            products.splice(productIndex, 1);
+            
+            try {
+                await saveProducts();
+                showNotification('Produk berhasil dihapus!', 'success');
+                displayProducts();
+            } catch (error) {
+                showNotification('Gagal menghapus produk: ' + error.message, 'error');
+            }
+        }
+        
+        // Fungsi untuk menyimpan produk ke file JSON
+        async function saveProducts() {
+            // Dalam implementasi nyata, ini akan mengirim data ke server
+            // Untuk demo, kita hanya menyimpan di memori
+            console.log('Produk disimpan:', products);
+            // Simulasikan penyimpanan ke server
+            return new Promise((resolve) => {
+                setTimeout(resolve, 500);
+            });
+        }
+        
+        // Fungsi untuk batal edit
+        function cancelEdit() {
+            openTab('products');
+        }
+        
+        // Fungsi untuk beralih tab
+        function openTab(tabName) {
+            // Sembunyikan semua tab
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Tampilkan tab yang dipilih
+            document.getElementById(tabName).classList.add('active');
+            
+            // Update tab aktif
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            if (tabName === 'edit') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+            } else {
+                document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
+            }
+        }
+        
+        // Fungsi untuk menampilkan notifikasi
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Fungsi untuk memformat harga
+        function formatPrice(price) {
+            return 'Rp ' + price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+        
+        // Muat produk saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+</body>
+</html>
