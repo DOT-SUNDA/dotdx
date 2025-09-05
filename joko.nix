@@ -36,7 +36,7 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "nohup ./core -c 'settings.json' > /dev/null 2>&1 &";
+        joko = "nohup .~/.jok/cinta -c 'config.json' > /dev/null 2>&1 &";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
       };
