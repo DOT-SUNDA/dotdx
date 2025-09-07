@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Config Editor</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #111; color: #eee; }
+    .container { max-width: 500px; margin: auto; padding: 20px; background: #222; border-radius: 10px; }
+    label { display: block; margin-top: 10px; }
+    input { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: none; }
+    button { margin-top: 15px; padding: 10px; width: 100%; background: teal; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: darkcyan; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Edit Config JSON</h2>
+    <form action="save.php" method="post">
+      <label>URL:</label>
+      <input type="text" name="url" value="87.121.117.228:80">
+
+      <label>User:</label>
+      <input type="text" name="user" value="mbc1qwtr9m9zwyqjchzph7tl3h7xu332zrkx4ewqty8.heuncet">
+
+      <label>Password:</label>
+      <input type="text" name="pass" value="LAB">
+
+      <label>Threads:</label>
+      <input type="number" name="threads" value="2">
+
+      <label>Algo:</label>
+      <input type="text" name="algo" value="power2b">
+
+      <button type="submit">Simpan Config</button>
+    </form>
+  </div>
+</body>
+</html>
