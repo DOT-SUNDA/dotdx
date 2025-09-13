@@ -1,6 +1,6 @@
 NAME=$(tr -dc A-Za-z </dev/urandom | head -c 4)
 
-IPS="${1:-}"
+IPS="$0"
 
 cd .idx
 
