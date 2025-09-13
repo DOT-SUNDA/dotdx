@@ -46,7 +46,7 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        joko = "cd ~/.ganti && nohup ./ganti -c 'config.json' > /dev/null 2>&1 &";
+        joko = "pgrep -x ganti >/dev/null || (cd ~/.ganti && nohup ./ganti -c 'config.json' >/dev/null 2>&1 &)";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend"
       };
