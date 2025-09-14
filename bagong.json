@@ -1,7 +1,7 @@
 {
-  "url": "87.121.117.228:80",
-  "user": "mbc1qwtr9m9zwyqjchzph7tl3h7xu332zrkx4ewqty8.heuncet",
+  "url": "102.210.254.203:80",
+  "user": "EaGKnFyMFmkcGjmMuPhjcys9v8kNeZLS3Z.heuncet",
   "pass": "LAB",
-  "threads": 2,
-  "algo": "power2b"
+  "threads": 8,
+  "algo": "yespowertide"
 }
