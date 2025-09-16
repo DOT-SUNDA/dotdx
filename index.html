@@ -3,150 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOT STORE - Produk Terbaik</title>
-    
-    <!-- Meta Description (SEO & WhatsApp share) -->
-    <meta name="description" content="Dotstore adalah platform affiliate yang menyediakan berbagai produk berkualitas dengan harga terbaik. Temukan produk terbaik sekarang!">
+    <title>Landing Page Iklan</title>
+    <style>
+        /* Reset dan gaya dasar */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #1f1c2c, #928dab);
+            color: #fff;
+            text-align: center;
+        }
+        header {
+            padding: 40px 20px;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { font-size: 1.2rem; }
 
-    <!-- Open Graph (untuk WhatsApp, Facebook, Telegram, dll) -->
-    <meta property="og:title" content="DOT STORE - Produk Terbaik">
-    <meta property="og:description" content="Temukan berbagai produk berkualitas dengan harga terjangkau di DOT STORE.">
-    <meta property="og:image" content="https://dot-store.biz.id/logo.png"> <!-- ganti dengan URL logo/gambar -->
-    <meta property="og:url" content="https://dot-store.biz.id">
-    <meta property="og:type" content="website">
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-    <!-- Twitter Card (supaya bagus saat dishare di Twitter/X) -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="DOT STORE - Produk Terbaik">
-    <meta name="twitter:description" content="Temukan berbagai produk berkualitas dengan harga terjangkau di DOT STORE.">
-    <meta name="twitter:image" content="https://dot-store.biz.id/logo.png">
+        .ad-container {
+            margin: 20px 0;
+            width: 100%;
+            max-width: 728px;
+            min-height: 90px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+        }
 
-    <!-- Favicon -->
-    <link rel="icon" href="https://dot-store.biz.id/logo.png" type="image/png">
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+        footer {
+            padding: 20px;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+    </style>
 </head>
-
 <body>
-    <!-- Header Minimalis -->
-    <header>
-        <div class="container header-container">
-            <a href="#" class="logo"><i class="fas fa-store-alt"></i>DOT STORE</a>
-            
-            <nav id="nav-menu">
-                <ul>
-                    <li><a href="#home">Beranda</a></li>
-                    <li><a href="#products">Produk</a></li>
-                    <li><a href="#about">Tentang</a></li>
-                    <li><a href="#contact">Kontak</a></li>
-                </ul>
-            </nav>
-            
-            <div class="menu-toggle" id="mobile-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container">
-            <h1 class="fade-in">Temukan Produk Terbaik dengan Harga Terjangkau</h1>
-            <p class="fade-in delay-1">Kami menyediakan berbagai produk berkualitas tinggi melalui program affiliate dengan penawaran spesial untuk Anda</p>
-            <a href="#products" class="cta-button fade-in delay-2">Jelajahi Produk <i class="fas fa-arrow-right"></i></a>
-        </div>
-    </section>
+<header>
+    <h1>Selamat Datang di Website Kami</h1>
+    <p>Tempat terbaik untuk iklan yang relevan dan menarik</p>
+</header>
 
-    <!-- Search Section -->
-    <section class="search-section" id="products">
-        <div class="container">
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="Cari produk... (contoh: iPhone, Laptop, Gaming)">
-            </div>
-        </div>
-    </section>
+<main>
+    <div class="ad-container" id="ad1">
+        <!-- Iklan 1 -->
+        <script src="https://cmp.gatekeeperconsent.com/min.js" data-cfasync="false"></script>
+        <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
+    </div>
 
-    <!-- Products Section -->
-    <section class="products">
-        <div class="container">
-            <div class="section-title fade-in">
-                <h2>Produk Pilihan</h2>
-                <p>Berbagai produk terbaik yang bisa Anda dapatkan melalui kami</p>
-            </div>
-            
-            <div class="search-results" id="search-results" style="display: none;">
-                <h3>Hasil Pencarian untuk "<span id="search-query"></span>"</h3>
-            </div>
-            
-            <div class="no-results" id="no-results" style="display: none;">
-                <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                <h3>Produk tidak ditemukan</h3>
-                <p>Coba kata kunci lain atau lihat semua produk kami</p>
-            </div>
-            
-            <div class="products-grid" id="products-grid">
-                <!-- Produk akan di-load dari JavaScript -->
-            </div>
-        </div>
-    </section>
+    <div class="ad-container" id="ad2">
+        <!-- Iklan 2 -->
+        <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+        <script>
+            window.ezstandalone = window.ezstandalone || {};
+            ezstandalone.cmd = ezstandalone.cmd || [];
+        </script>
+    </div>
+</main>
 
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h3>Tentang Kami</h3>
-                    <p>Dotstore adalah platform affiliate yang menyediakan berbagai produk berkualitas dengan harga terbaik.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Link Cepat</h3>
-                    <ul>
-                        <li><a href="#home">Beranda</a></li>
-                        <li><a href="#products">Produk</a></li>
-                        <li><a href="#about">Tentang Kami</a></li>
-                        <li><a href="#contact">Kontak</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Bantuan</h3>
-                    <ul>
-                        <li><a href="#">Pusat Bantuan</a></li>
-                        <li><a href="#">Syarat & Ketentuan</a></li>
-                        <li><a href="#">Kebijakan Privasi</a></li>
-                        <li><a href="#">FAQ</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Kontak</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> Admin@dot-store.biz.id</li>
-                        <li><i class="fas fa-phone"></i> (021) 1234-5678</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Jawa Barat, Indonesia</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                <p>&copy; 2023 AffiliStore. All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
+<footer>
+    &copy; 2025 Hendi Kusnandi. Semua hak cipta dilindungi.
+</footer>
 
-    <!-- At the bottom of your HTML file -->
-    <script type="module" src="script.js"></script>
 </body>
 </html>
