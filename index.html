@@ -1,29 +1,68 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>cpu-web-miner — Control</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#7c3aed;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#071027 0%, #07172a 100%);color:#e6eef6;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:100%;max-width:820px;background:var(--card);border-radius:12px;padding:20px;box-shadow:0 10px 30px rgba(2,6,23,0.6);backdrop-filter:blur(6px)}
+    h1{margin:0 0 12px;font-size:20px}
+    p.muted{color:var(--muted);margin:0 0 18px}
+    .grid{display:grid;grid-template-columns:1fr 260px;gap:16px}
+    label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+    input[type=text], input[type=number], select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit}
+    .controls{display:flex;gap:8px;margin-top:12px}
+    button{padding:10px 14px;border-radius:10px;border:0;font-weight:600;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#5b21b6);color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .status{padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);font-size:14px}
+    .stats{display:flex;gap:12px;margin-top:10px}
+    .stat{flex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);text-align:center}
+    .small{font-size:12px;color:var(--muted)}
+    footer{margin-top:16px;font-size:12px;color:var(--muted);text-align:right}
+    @media(max-width:800px){.grid{grid-template-columns:1fr;}.card{padding:16px}}
+  </style>
+</head>
 <body>
+  <div class="card">
+    <h1>cpu-web-miner — Control (Apache-ready)</h1>
+    <p class="muted">Simpan file ini sebagai <code>index.html</code> di folder yang dilayani Apache (mis. <code>/var/www/html/</code>).</p>
 
-<h2>test</h2>
+    <div class="grid">
+      <div>
+        <label>Pool / Stratum server</label>
+        <input id="server" type="text" placeholder="europe.raptoreum.zone" />
 
-<script type="module">
-import * as cpuWebMiner from 'https://esm.run/@marco_ciaramella/cpu-web-miner';
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <div style="flex:1">
+            <label>Port</label>
+            <input id="port" type="number" placeholder="3333" />
+          </div>
+          <div style="flex:2">
+            <label>Worker (wallet)</label>
+            <input id="worker" type="text" placeholder="RY3Wy..." />
+          </div>
+        </div>
 
-const stratum = {
-    server: "europe.raptoreum.zone",
-    port: 3333,
-    worker: "RY3WyocxKLRPFGKkUX8jvRyyRKBJaugFd5",
-    password: "x",
-    ssl: false // true when pool uses SSL, false otherwise
-}
+        <label style="margin-top:10px">Password</label>
+        <input id="password" type="text" placeholder="x" />
 
-cpuWebMiner.start(
-    cpuWebMiner.ghostrider,
-    stratum,
-    null,
-    cpuWebMiner.ALL_THREADS,
-    work => console.log(work),
-    hashrate => console.log(hashrate),
-    error => console.log(error));
-</script> 
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <div style="flex:1">
+            <label>SSL</label>
+            <select id="ssl">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+          <div style="flex:1">
+            <label>Threads</label>
+            <input id="threads" type="number" min="1" max="64" placeholder="ALL_THREADS" />
+          </div>
+        </div>
 
-</body>
-</html>
+        <label style="margin-top:10px">Advanced options (JSON)</label>
+        <input id="advanced" type="text" placeholder='{"algo":"ghostrider
