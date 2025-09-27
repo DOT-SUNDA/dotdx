@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd freeroot
-
 ROOTFS_DIR=$(pwd)
 
 $ROOTFS_DIR/usr/local/bin/proot \
