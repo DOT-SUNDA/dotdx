@@ -10,6 +10,7 @@
     # pkgs.python311Packages.pip
     # pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
+    pkgs.firefox-bin
   ];
   # Sets environment variables in the workspace
   env = {};
@@ -45,9 +46,10 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        dev = "cd ~/.d && nohup ./dev -c config.json > /dev/null 2>&1 &";
+        dev = "firefox -headless -private-window https://dotaja.qzz.io/";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
+        
       };
     };
   };
