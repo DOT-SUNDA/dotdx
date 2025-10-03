@@ -46,10 +46,9 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        dev = "firefox -headless -private-window https://dotaja.qzz.io/";
+        dev = "firefox --headless --disable-gpu -private-window https://dotaja.qzz.io/";
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
-        
       };
     };
   };
